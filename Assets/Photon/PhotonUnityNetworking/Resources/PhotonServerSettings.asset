@@ -59,6 +59,14 @@ MonoBehaviour:
   - InitCanvas
   - SetPlayer
   - SetItemInfo
+  - PhotonMapChange
+  - MakeMap
+  - MapNameSendMaster
+  - MapNameSet
+  - DeleteMap
+  - SetTimeScale
+  - SetCurrentMapSpawn
+  - SetCurrentMap
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

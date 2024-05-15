@@ -563,6 +563,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   loadMapName: 
+  CurrentMap: {fileID: 0}
+  currentMapSpawnPoint: {fileID: 0}
+  basecampSpawnPoint: {fileID: 0}
 --- !u!114 &53058454
 MonoBehaviour:
   m_ObjectHideFlags: 0

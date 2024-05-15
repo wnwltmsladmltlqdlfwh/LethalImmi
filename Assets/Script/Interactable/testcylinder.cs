@@ -1,6 +1,3 @@
-using Photon.Pun;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class testcylinder : Interactable
@@ -14,6 +11,6 @@ public class testcylinder : Interactable
 
 	protected override void Interact(GameObject player)
 	{
-		SceneMapLoadManager.Instance.PlayerLoadMap(player);
+		
 	}
 }

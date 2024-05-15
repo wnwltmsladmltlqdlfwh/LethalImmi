@@ -2,7 +2,7 @@ using Photon.Pun;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ItemSpawnManager : MonoBehaviourPunCallbacks
+public class ItemSpawnManager : MonoBehaviourPun
 {
 	public static ItemSpawnManager Instance = null;
 
@@ -48,23 +48,7 @@ public class ItemSpawnManager : MonoBehaviourPunCallbacks
 				itemPrefab.AddComponent<ItemObject>();
 			}
 
-			photonView.RPC("SetItemInfo", RpcTarget.AllBuffered, itemPrefab, randomInt);
-
-			//itemPrefab.GetComponent<ItemObject>().itemData = DataManager.Instance.itemDataDic[itemKeyList[randomInt]];
-
-			//ItemObject componentValue = itemPrefab.GetComponent<ItemObject>();
-			//ItemData itemDataValue = itemPrefab.GetComponent<ItemObject>().itemData;
-
-			//if (componentValue.itemData != null)
-			//{
-			//	componentValue.item_name = itemDataValue.Item_Name;
-			//	componentValue.sellPrice = Random.Range(itemDataValue.Item_MinPrice, itemDataValue.Item_MaxPrice);
-			//	componentValue.weight = itemDataValue.Item_Weight;
-			//	componentValue.twoHanded = itemDataValue.Item_TwoHanded;
-			//	componentValue.icon = itemDataValue.Item_Icon;
-			//	componentValue.prefab_name = itemNameList[randomInt];
-			//}
-			//itemPrefab.gameObject.name = componentValue.item_name;
+            photonView.RPC("SetItemInfo", RpcTarget.AllBuffered, itemPrefab, randomInt);
 		}
 	}
 
@@ -85,6 +69,7 @@ public class ItemSpawnManager : MonoBehaviourPunCallbacks
             componentValue.icon = itemDataValue.Item_Icon;
             componentValue.prefab_name = itemNameList[itemKey];
         }
+
         item.gameObject.name = componentValue.item_name;
     }
 
