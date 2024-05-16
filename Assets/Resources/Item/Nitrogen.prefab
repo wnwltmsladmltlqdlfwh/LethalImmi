@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 4459320036525772630}
   - component: {fileID: 8319293321185282221}
   - component: {fileID: -4672398847965894036}
+  - component: {fileID: -1372623352282698774}
   m_Layer: 0
   m_Name: Nitrogen
   m_TagString: Items
@@ -120,7 +121,9 @@ MonoBehaviour:
   Synchronization: 3
   OwnershipTransfer: 0
   observableSearch: 2
-  ObservedComponents: []
+  ObservedComponents:
+  - {fileID: 4459320036525772630}
+  - {fileID: -4672398847965894036}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -172,3 +175,26 @@ MonoBehaviour:
   m_SynchronizeAngularVelocity: 0
   m_TeleportEnabled: 0
   m_TeleportIfDistanceGreaterThan: 3
+--- !u!114 &-1372623352282698774
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1203856372459172}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cfea27dd0ab729349a30b8405c5f6508, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  useEvents: 0
+  promptMessage: 
+  needLongPush: 0
+  itemData: {fileID: 0}
+  item_name: 
+  sellPrice: 0
+  buyPrice: 0
+  weight: 0
+  twoHanded: 0
+  icon: {fileID: 0}
+  prefab_name: 

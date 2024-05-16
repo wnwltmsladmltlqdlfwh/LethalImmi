@@ -67,6 +67,10 @@ MonoBehaviour:
   - SetTimeScale
   - SetCurrentMapSpawn
   - SetCurrentMap
+  - UpdateItemData
+  - MapLoadComplete
+  - SetCurMapTransForm
+  - SetSpawnPosition
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

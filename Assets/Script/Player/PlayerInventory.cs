@@ -69,9 +69,9 @@ public class PlayerInventory : MonoBehaviour
 
         Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
 
-        ItemSpawnManager.Instance.PlayerDropItem(invenSellPrice[currentSlot], invenData[currentSlot], ray.origin + ray.direction * 1f);
+        ItemSpawnManager.Instance.RequestDestroyItem(invenSellPrice[currentSlot], invenData[currentSlot], ray.origin + ray.direction * 1f);
         invenData[currentSlot] = null;
-        PhotonNetwork.Destroy(itemPrefabs[currentSlot]);
+        Destroy(itemPrefabs[currentSlot]);
         if (itemPrefabs[currentSlot] != null) { itemPrefabs[currentSlot] = null; }
 
         invenDataChanged?.Invoke();

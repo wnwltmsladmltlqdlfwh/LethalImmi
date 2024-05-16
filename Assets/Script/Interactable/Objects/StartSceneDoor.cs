@@ -2,7 +2,12 @@ using UnityEngine;
 
 public class StartSceneDoor : Interactable
 {
-    private void Update()
+	private void Start()
+	{
+		needLongPush = true;
+	}
+
+	private void Update()
     {
         if (SceneMapLoadManager.Instance.loadMapName == string.Empty) { promptMessage = string.Empty; }
         else
@@ -15,7 +20,7 @@ public class StartSceneDoor : Interactable
     {
         if(SceneMapLoadManager.Instance.currentMapSpawnPoint != null)
         {
-            player.transform.position = SceneMapLoadManager.Instance.currentMapSpawnPoint.position;
+            player.transform.position = SceneMapLoadManager.Instance.currentMapSpawnPoint;
         }
     }
 }

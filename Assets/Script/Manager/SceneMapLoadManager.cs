@@ -3,17 +3,17 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class SceneMapLoadManager : MonoBehaviourPunCallbacks
+public class SceneMapLoadManager : MonoBehaviourPun, IPunObservable
 {
 	public static SceneMapLoadManager Instance = null;
 
     public string loadMapName;
 
-	public GameObject CurrentMap = null;
+	public string curMapName = null;
 
-    public Transform currentMapSpawnPoint = null;
+    public Vector3 currentMapSpawnPoint;
 
-    public Transform basecampSpawnPoint = null;
+    public Vector3 basecampSpawnPoint;
 
     private void Awake()
     {
@@ -29,9 +29,8 @@ public class SceneMapLoadManager : MonoBehaviourPunCallbacks
         }
     }
 
-    public override void OnEnable()
+    private void OnEnable()
 	{
-		base.OnEnable();
 		SceneManager.sceneLoaded += OnSceneLoad;
 		SceneManager.sceneUnloaded += OnSceneUnLoad;
 	}
@@ -48,7 +47,7 @@ public class SceneMapLoadManager : MonoBehaviourPunCallbacks
 		if(scene.name == "StartScene")
 		{
 			GameManager.Instance.GameStart();
-			basecampSpawnPoint = GameObject.Find("OutDoorPoint").transform;
+			basecampSpawnPoint = GameObject.Find("OutDoorPoint").transform.position;
         }
 	}
 
@@ -58,15 +57,24 @@ public class SceneMapLoadManager : MonoBehaviourPunCallbacks
 
 		if(view == null) { return; }
 
-		if (DataManager.Instance.mapDataDic.ContainsKey(mapName) == false)
+
+		if (mapName == string.Empty)
 		{
-			print("맵 세팅 실패");
-			return;
+			print("맵 세팅 취소");
+			photonView.RPC("MapNameSet", RpcTarget.AllBuffered, mapName);
 		}
 		else
 		{
-			print("맵 세팅 성공");
-			photonView.RPC("MapNameSet", RpcTarget.AllBuffered, mapName);
+			if (DataManager.Instance.mapDataDic.ContainsKey(mapName) == false)
+			{
+				print("맵 세팅 실패");
+				return;
+			}
+			else
+			{
+				print("맵 세팅 성공");
+				photonView.RPC("MapNameSet", RpcTarget.AllBuffered, mapName);
+			}
 		}
     }
 
@@ -76,53 +84,13 @@ public class SceneMapLoadManager : MonoBehaviourPunCallbacks
 		loadMapName = mapName;
     }
 
-    public IEnumerator PlayerLoadMap(GameObject player)
+    public void PlayerLoadMap(GameObject player)
 	{
 		PhotonView view = player.GetComponent<PhotonView>();
 
-		if (view != null && view.Owner.IsMasterClient == true)
-		{
-			MakeMap(loadMapName);
-		}
-		else if(view != null && view.Owner.IsMasterClient == false)
+		if (view != null)
 		{
 			photonView.RPC("MakeMap", RpcTarget.MasterClient, loadMapName);
-        }
-
-        photonView.RPC("SetCurrentMap", RpcTarget.All);
-
-        yield return null;
-    }
-
-	[PunRPC]
-	private void MakeMap(string mapName)
-	{
-		if(mapName != null)
-		{
-			var curmap = PhotonNetwork.Instantiate($"Map/{loadMapName}",
-				GameObject.Find("MapSetPoint").transform.position, Quaternion.identity);
-        }
-	}
-
-	[PunRPC]
-	private void SetCurrentMap()
-	{
-        print("문 찾기 시작");
-
-        CurrentMap = GameObject.Find($"{loadMapName}(Clone)");
-		currentMapSpawnPoint = CurrentMap.transform.Find("MapSpawnPoint");
-		if (currentMapSpawnPoint == null)
-		{
-			print("문 찾기 실패");
-		}
-		else
-		{
-			print("문 찾기 성공");
-		}
-
-		if (currentMapSpawnPoint == null)
-		{
-			currentMapSpawnPoint = CurrentMap.transform.Find("StartPoint");
 		}
 	}
 
@@ -136,14 +104,14 @@ public class SceneMapLoadManager : MonoBehaviourPunCallbacks
         }
         else if (view != null && view.Owner.IsMasterClient == false)
         {
-            photonView.RPC("DeleteMap", RpcTarget.AllBuffered);
+            photonView.RPC("DeleteMap", RpcTarget.MasterClient);
         }
     }
 
 	[PunRPC]
 	private void DeleteMap()
 	{
-		var map = GameObject.Find($"{loadMapName}");
+		var map = GameObject.Find($"{curMapName}");
 
 		if(map != null)
 		{
@@ -161,9 +129,21 @@ public class SceneMapLoadManager : MonoBehaviourPunCallbacks
 		}
 	}
 
-	public override void OnDisable()
+	private void OnDisable()
 	{
 		SceneManager.sceneUnloaded -= OnSceneUnLoad;
 		SceneManager.sceneLoaded -= OnSceneLoad;
 	}
+
+	public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+	{
+		if(stream.IsWriting)
+		{
+			stream.SendNext(curMapName);
+		}
+        else
+        {
+			curMapName = (string)stream.ReceiveNext();
+        }
+    }
 }

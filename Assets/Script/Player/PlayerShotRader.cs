@@ -1,3 +1,4 @@
+using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,6 +14,7 @@ public class PlayerShotRader : MonoBehaviour
 
 	public void ShotRader()
 	{
+		if(gameObject.GetPhotonView().IsMine == false) { return; }
 		if(canShotRader == false) { return; }
 		GameObject raderPrefab = Instantiate(rader, transform.position, Quaternion.identity);
 		StartCoroutine(ExpandSphere(raderPrefab));

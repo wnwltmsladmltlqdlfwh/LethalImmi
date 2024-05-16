@@ -35,27 +35,42 @@ public class ItemSpawnManager : MonoBehaviourPun
 		}
 	}
 
+	public void PlayerLoadItem(GameObject player)
+	{
+		PhotonView view = player.GetComponent<PhotonView>();
+
+		if (view != null)
+		{
+			photonView.RPC("ItemSpawn", RpcTarget.MasterClient, 10);
+		}
+	}
+
+	[PunRPC]
 	public void ItemSpawn(int makeCount)
 	{
 		for (int i = 0; i < makeCount; i++)
 		{
-			int randomInt = Random.Range(0, itemNameList.Count);
-			float ranPos = Random.Range(1f, 10f);
-			GameObject itemPrefab = PhotonNetwork.Instantiate($"Item/{itemNameList[randomInt]}", new Vector3(ranPos, ranPos, ranPos), Quaternion.identity);
+			int randomInt = Random.Range(0, DataManager.Instance.itemDataDic.Count);
+
+			Vector3 spawnPos = GameObject.Find($"{SceneMapLoadManager.Instance.loadMapName}(Clone)").transform.position;
+			Vector3 randomSetPos = spawnPos + Random.insideUnitSphere * 10f; 
+
+			GameObject itemPrefab = PhotonNetwork.Instantiate($"Item/{itemNameList[randomInt]}", randomSetPos, Quaternion.identity);
 
 			if (itemPrefab.GetComponent<ItemObject>() == null)
 			{
 				itemPrefab.AddComponent<ItemObject>();
 			}
 
-            photonView.RPC("SetItemInfo", RpcTarget.AllBuffered, itemPrefab, randomInt);
+			itemPrefab.GetComponent<ItemObject>().itemData =
+					DataManager.Instance.itemDataDic[itemKeyList[randomInt]];
 		}
 	}
 
 	[PunRPC]
-	private void SetItemInfo(GameObject item, int itemKey)
+	private void SetItemInfo(ItemObject item, int itemKey)
 	{
-        item.GetComponent<ItemObject>().itemData = DataManager.Instance.itemDataDic[itemKeyList[itemKey]];
+        item.itemData = DataManager.Instance.itemDataDic[itemKeyList[itemKey]];
 
         ItemObject componentValue = item.GetComponent<ItemObject>();
         ItemData itemDataValue = item.GetComponent<ItemObject>().itemData;
@@ -73,6 +88,12 @@ public class ItemSpawnManager : MonoBehaviourPun
         item.gameObject.name = componentValue.item_name;
     }
 
+	public void RequestDestroyItem(int curSellPrice, ItemData dropItemData, Vector3 dropPos)
+	{
+		photonView.RPC("PlayerDropItem", RpcTarget.MasterClient, curSellPrice, dropItemData, dropPos);
+	}
+
+	[PunRPC]
 	public void PlayerDropItem(int curSellPrice, ItemData dropItemData, Vector3 dropPos)
 	{
 		GameObject itemPrefab =

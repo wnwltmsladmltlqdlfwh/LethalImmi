@@ -26,7 +26,7 @@ public class MapSettingCastle : Interactable
         {
             SceneMapLoadManager.Instance.SetCurrentMap(promptMessage, player);
         }
-        else
+        else if(SceneMapLoadManager.Instance.loadMapName != null)
         {
             SceneMapLoadManager.Instance.SetCurrentMap(string.Empty, player);
         }

@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.18028352, g: 0.22571376, b: 0.3069224, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -563,9 +563,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   loadMapName: 
-  CurrentMap: {fileID: 0}
-  currentMapSpawnPoint: {fileID: 0}
-  basecampSpawnPoint: {fileID: 0}
+  curMapName: 
+  currentMapSpawnPoint: {x: 0, y: 0, z: 0}
+  basecampSpawnPoint: {x: 0, y: 0, z: 0}
 --- !u!114 &53058454
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8471,7 +8471,6 @@ MonoBehaviour:
   observableSearch: 2
   ObservedComponents:
   - {fileID: 1914456475}
-  - {fileID: 1914456476}
   sceneViewId: 5
   InstantiationId: 0
   isRuntimeInstantiated: 0

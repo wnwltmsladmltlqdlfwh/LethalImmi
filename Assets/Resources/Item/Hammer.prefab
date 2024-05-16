@@ -12,11 +12,11 @@ GameObject:
   - component: {fileID: 33868117890437914}
   - component: {fileID: 23984828415959716}
   - component: {fileID: 65368937610898832}
-  - component: {fileID: 3380699137304099473}
   - component: {fileID: -334685848142342899}
   - component: {fileID: -81346311274218740}
   - component: {fileID: -2592049607037173429}
   - component: {fileID: 4860599265923068023}
+  - component: {fileID: 3678128810959996228}
   m_Layer: 0
   m_Name: Hammer
   m_TagString: Items
@@ -102,29 +102,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.10898295, y: 0.20570335, z: 0.03469412}
   m_Center: {x: 0.008659987, y: 0.102851674, z: 0.000000024214387}
---- !u!114 &3380699137304099473
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1914166207077720}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cfea27dd0ab729349a30b8405c5f6508, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  useEvents: 0
-  promptMessage: 
-  needLongPush: 0
-  itemData: {fileID: 0}
-  item_name: 
-  sellPrice: 0
-  buyPrice: 0
-  weight: 0
-  twoHanded: 0
-  icon: {fileID: 0}
-  prefab_name: 
 --- !u!114 &-334685848142342899
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -197,3 +174,26 @@ MonoBehaviour:
   m_SynchronizeAngularVelocity: 0
   m_TeleportEnabled: 0
   m_TeleportIfDistanceGreaterThan: 3
+--- !u!114 &3678128810959996228
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1914166207077720}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cfea27dd0ab729349a30b8405c5f6508, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  useEvents: 0
+  promptMessage: 
+  needLongPush: 0
+  itemData: {fileID: 0}
+  item_name: 
+  sellPrice: 0
+  buyPrice: 0
+  weight: 0
+  twoHanded: 0
+  icon: {fileID: 0}
+  prefab_name: 
