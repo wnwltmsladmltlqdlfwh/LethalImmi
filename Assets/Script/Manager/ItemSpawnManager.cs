@@ -1,6 +1,8 @@
 using Photon.Pun;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.Progress;
 
 public class ItemSpawnManager : MonoBehaviourPun
 {
@@ -35,27 +37,24 @@ public class ItemSpawnManager : MonoBehaviourPun
 		}
 	}
 
-	public void PlayerLoadItem(GameObject player)
+	public void PlayerLoadItem(GameObject map, Transform itemSpawnPoint)
 	{
-		PhotonView view = player.GetComponent<PhotonView>();
 
-		if (view != null)
-		{
-			photonView.RPC("ItemSpawn", RpcTarget.MasterClient, 10);
-		}
+		photonView.RPC("ItemSpawn", RpcTarget.MasterClient, Random.Range(5, 10));
 	}
 
 	[PunRPC]
-	public void ItemSpawn(int makeCount)
+	public void ItemSpawn(int makeCount, Transform itemSpawnPoint)
 	{
 		for (int i = 0; i < makeCount; i++)
 		{
 			int randomInt = Random.Range(0, DataManager.Instance.itemDataDic.Count);
 
-			Vector3 spawnPos = GameObject.Find($"{SceneMapLoadManager.Instance.loadMapName}(Clone)").transform.position;
-			Vector3 randomSetPos = spawnPos + Random.insideUnitSphere * 10f; 
+			Vector3 spawnPos = itemSpawnPoint.position;
+			Vector3 randomSetPos = spawnPos + Random.insideUnitSphere * 25f;
+			Vector3 dontMakeUnderPos = new Vector3(randomSetPos.x, Random.Range(spawnPos.y, spawnPos.y + 10f), randomSetPos.z);
 
-			GameObject itemPrefab = PhotonNetwork.Instantiate($"Item/{itemNameList[randomInt]}", randomSetPos, Quaternion.identity);
+			GameObject itemPrefab = PhotonNetwork.Instantiate($"Item/{itemNameList[randomInt]}", dontMakeUnderPos, Quaternion.identity);
 
 			if (itemPrefab.GetComponent<ItemObject>() == null)
 			{
@@ -64,31 +63,27 @@ public class ItemSpawnManager : MonoBehaviourPun
 
 			itemPrefab.GetComponent<ItemObject>().itemData =
 					DataManager.Instance.itemDataDic[itemKeyList[randomInt]];
+
+			photonView.RPC("InitializeItem", RpcTarget.AllBuffered, itemPrefab.GetPhotonView().ViewID);
 		}
 	}
 
+
 	[PunRPC]
-	private void SetItemInfo(ItemObject item, int itemKey)
+	public void InitializeItem(int viewID)
 	{
-        item.itemData = DataManager.Instance.itemDataDic[itemKeyList[itemKey]];
+		PhotonView itemView = PhotonView.Find(viewID);
+		if (itemView != null)
+		{
+			ItemObject itemObject = itemView.GetComponent<ItemObject>();
+			if (itemObject != null)
+			{
+				itemObject.SetItemInfo();
+			}
+		}
+	}
 
-        ItemObject componentValue = item.GetComponent<ItemObject>();
-        ItemData itemDataValue = item.GetComponent<ItemObject>().itemData;
-
-        if (componentValue.itemData != null)
-        {
-            componentValue.item_name = itemDataValue.Item_Name;
-            componentValue.sellPrice = Random.Range(itemDataValue.Item_MinPrice, itemDataValue.Item_MaxPrice);
-            componentValue.weight = itemDataValue.Item_Weight;
-            componentValue.twoHanded = itemDataValue.Item_TwoHanded;
-            componentValue.icon = itemDataValue.Item_Icon;
-            componentValue.prefab_name = itemNameList[itemKey];
-        }
-
-        item.gameObject.name = componentValue.item_name;
-    }
-
-	public void RequestDestroyItem(int curSellPrice, ItemData dropItemData, Vector3 dropPos)
+	public void RequestDropItem(int curSellPrice, ItemData dropItemData, Vector3 dropPos)
 	{
 		photonView.RPC("PlayerDropItem", RpcTarget.MasterClient, curSellPrice, dropItemData, dropPos);
 	}
@@ -113,9 +108,10 @@ public class ItemSpawnManager : MonoBehaviourPun
 			componentValue.sellPrice = curSellPrice;
 			componentValue.weight = dropItemData.Item_Weight;
 			componentValue.twoHanded = dropItemData.Item_TwoHanded;
-			componentValue.icon = dropItemData.Item_Icon;
+			componentValue.icon_Path = dropItemData.Item_Icon_Path;
 			componentValue.prefab_name = dropItemData.Item_PrefabName;
+
+			componentValue.icon = Resources.Load<Sprite>(dropItemData.Item_Icon_Path);
 		}
-		itemPrefab.gameObject.name = componentValue.item_name;
 	}
 }

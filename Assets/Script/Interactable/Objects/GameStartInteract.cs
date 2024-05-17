@@ -24,41 +24,26 @@ public class GameStartInteract : Interactable
     protected override void Interact(GameObject player)
     {
         base.Interact(player);
-        if (SceneMapLoadManager.Instance.curMapName == string.Empty)
+        if (SceneMapLoadManager.Instance.currentMapSpawnPoint == Vector3.zero)
         {
-            if(player.GetPhotonView().Owner.IsMasterClient)
+            if (player.GetPhotonView().Owner == PhotonNetwork.MasterClient)
             {
-                MakeMap(SceneMapLoadManager.Instance.loadMapName);
-            }
+                SceneMapLoadManager.Instance.MakeMap();
+			}
             else
             {
-			    photonView.RPC("MakeMap", RpcTarget.MasterClient, SceneMapLoadManager.Instance.loadMapName);
+                PhotonView view = player.GetPhotonView();
+                photonView.RPC("RequestInteract", RpcTarget.MasterClient);
             }
-
-			ItemSpawnManager.Instance.PlayerLoadItem(player);
 		}
-        else
-        {
-            SceneMapLoadManager.Instance.PlayerDeleteMap(player);
-        }
     }
 
-	[PunRPC]
-	private void MakeMap(string mapName)
-	{
-		print("甘 积己 矫累");
-		var curmap = PhotonNetwork.Instantiate($"Map/{mapName}",
-			GameObject.Find("MapSetPoint").transform.position, Quaternion.identity);
-
-		if (curmap != null) { print($"{curmap.name}"); }
-
-		SceneMapLoadManager.Instance.curMapName = curmap.name;
-		print($"甘 积己 肯丰 : {SceneMapLoadManager.Instance.curMapName}");
-	}
-
-	[PunRPC]
-    void SetTimeScale(float time)
+    [PunRPC]
+    void RequestInteract()
     {
-        Time.timeScale = time;
+        if(PhotonNetwork.IsMasterClient)
+        {
+			SceneMapLoadManager.Instance.MakeMap();
+		}
     }
 }

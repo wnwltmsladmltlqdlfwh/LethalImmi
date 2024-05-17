@@ -20,3 +20,4 @@ MonoBehaviour:
   item_twoHanded: 0
   item_prefab: {fileID: 1914166207077720, guid: dc83b958e8dac504488dc5804259c79d, type: 3}
   item_icon: {fileID: 21300000, guid: 7302ba4e8b8cd95489ace5fc913acc18, type: 3}
+  item_icon_path: Item/Icon/icon_shovel_LP

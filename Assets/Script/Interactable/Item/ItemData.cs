@@ -6,7 +6,6 @@ using UnityEngine.UI;
 [CreateAssetMenu(fileName = "ItemData", menuName = "Item_ScriptableObject/Data", order = int.MaxValue)]
 public class ItemData : ScriptableObject
 {
-
 	[SerializeField]
 	private string item_name;
 	[SerializeField]
@@ -23,6 +22,8 @@ public class ItemData : ScriptableObject
 	private GameObject item_prefab;
 	[SerializeField]
 	private Sprite item_icon;
+	[SerializeField]
+	private string item_icon_path;
 	
 	public string Item_Name { get { return item_name; } }
 	public int Item_MinPrice { get { return item_minsellprice; } }
@@ -33,4 +34,5 @@ public class ItemData : ScriptableObject
 	public string Item_PrefabName { get { return item_prefab.name; } }
 	public GameObject Item_Prefab {  get { return item_prefab; } }
 	public Sprite Item_Icon { get { return item_icon; } }
+	public string Item_Icon_Path { get { return item_icon_path; } }
 }

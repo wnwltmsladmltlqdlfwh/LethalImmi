@@ -13,9 +13,9 @@ public class ItemObject : Interactable, IPunObservable
 	public bool twoHanded;
 	public Sprite icon;
 	public string prefab_name;
+	public string icon_Path;
 
 	GameObject itemInfoUI;
-	PhotonView phView;
 
 
 	private void Start()
@@ -23,22 +23,10 @@ public class ItemObject : Interactable, IPunObservable
 		this.gameObject.layer = LayerMask.NameToLayer("Interactable");
 		
 		itemInfoUI = (GameObject)Resources.Load("Item/ItemCanvas");
-		if (this.GetComponent<PhotonView>() != null)
-		{
-			phView = GetComponent<PhotonView>();
-		}
-		else
-		{
-			this.gameObject.AddComponent<PhotonView>();
-		}
 
 		if(itemData != null)
 		{
 			photonView.RPC("SetItemInfo", RpcTarget.AllBuffered);
-		}
-		else
-		{
-			print("아이템 데이터가 없습니다.");
 		}
 
 		if (item_name != null)
@@ -47,20 +35,33 @@ public class ItemObject : Interactable, IPunObservable
 		}
 	}
 
-	[PunRPC]
-	public void ItemTakeUser(GameObject player)
+	public void SetItemInfo()
 	{
-		if (player.GetComponent<PlayerInventory>() != null)
-		{
-			if (player.GetComponent<PlayerInventory>().InvenIsFull() == true)
-			{ return; }
+		item_name = itemData.Item_Name;
+		sellPrice = UnityEngine.Random.Range(itemData.Item_MinPrice, itemData.Item_MaxPrice);
+		weight = itemData.Item_Weight;
+		twoHanded = itemData.Item_TwoHanded;
+		icon = itemData.Item_Icon;
+		prefab_name = itemData.Item_PrefabName;
 
-			player.GetComponent<PlayerInventory>().GetItemData(sellPrice, this.itemData);
-			PhotonNetwork.Destroy(this.gameObject);
-		}
+		photonView.RPC("SyncItemInfo", RpcTarget.AllBuffered, item_name, sellPrice, buyPrice, weight, twoHanded, itemData.Item_Icon_Path, prefab_name);
 	}
 
-    protected override void Interact(GameObject player)
+	[PunRPC]
+	private void SyncItemInfo(string name, int sPrice, int bPrice, int w, bool tHanded, string i_path, string pName)
+	{
+		item_name = name;
+		sellPrice = sPrice;
+		buyPrice = bPrice;
+		weight = w;
+		twoHanded = tHanded;
+		prefab_name = pName;
+		icon_Path = i_path;
+
+		icon = Resources.Load<Sprite>(icon_Path); // 아이콘 로드
+	}
+
+	protected override void Interact(GameObject player)
     {
 		if (player.GetPhotonView())
 		{
@@ -75,6 +76,20 @@ public class ItemObject : Interactable, IPunObservable
 		}
 	}
 
+	[PunRPC]
+	public void ItemTakeUser(GameObject player)
+	{
+		if (player.GetComponent<PlayerInventory>() != null)
+		{
+			if (player.GetComponent<PlayerInventory>().InvenIsFull() == true)
+			{ return; }
+
+			player.GetComponent<PlayerInventory>().GetItemData(sellPrice, this.itemData);
+
+			PhotonNetwork.Destroy(this.gameObject);
+		}
+	}
+
 	public void ShowItemInfo()
 	{
 		GameObject canvasPrefab = Instantiate(itemInfoUI);
@@ -83,24 +98,6 @@ public class ItemObject : Interactable, IPunObservable
 
 		canvasPrefab.transform.Find("Name").GetComponent<TextMeshProUGUI>().text = item_name;
 		canvasPrefab.transform.Find("SellPrice").GetComponent<TextMeshProUGUI>().text = sellPrice.ToString();
-	}
-
-	[PunRPC]
-	private void SetItemInfo()
-	{
-		ItemData itemDataValue = this.itemData;
-
-		if (itemData != null)
-		{
-			item_name = itemDataValue.Item_Name;
-			sellPrice = UnityEngine.Random.Range(itemDataValue.Item_MinPrice, itemDataValue.Item_MaxPrice);
-			weight = itemDataValue.Item_Weight;
-			twoHanded = itemDataValue.Item_TwoHanded;
-			icon = itemDataValue.Item_Icon;
-			prefab_name = itemDataValue.Item_PrefabName;
-		}
-
-		gameObject.name = item_name;
 	}
 
 	public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
@@ -113,8 +110,8 @@ public class ItemObject : Interactable, IPunObservable
 			stream.SendNext(buyPrice);
 			stream.SendNext(weight);
 			stream.SendNext(twoHanded);
-			stream.SendNext(icon);
 			stream.SendNext(prefab_name);
+			stream.SendNext(icon_Path);
 		}
 		else
 		{
@@ -124,8 +121,10 @@ public class ItemObject : Interactable, IPunObservable
 			buyPrice = (int)stream.ReceiveNext();
 			weight = (int)stream.ReceiveNext();
 			twoHanded = (bool)stream.ReceiveNext();
-			icon = (Sprite)stream.ReceiveNext();
 			prefab_name = (string)stream.ReceiveNext();
+			icon_Path = (string)stream.ReceiveNext();
+
+			icon = Resources.Load<Sprite>(icon_Path);
 		}
 	}
 }

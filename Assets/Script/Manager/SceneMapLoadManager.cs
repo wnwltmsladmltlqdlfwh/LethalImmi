@@ -51,6 +51,8 @@ public class SceneMapLoadManager : MonoBehaviourPun, IPunObservable
         }
 	}
 
+
+	// 甘 积己
 	public void SetCurrentMap(string mapName, GameObject player)
 	{
 		var view = player.GetPhotonView();
@@ -84,28 +86,45 @@ public class SceneMapLoadManager : MonoBehaviourPun, IPunObservable
 		loadMapName = mapName;
     }
 
-    public void PlayerLoadMap(GameObject player)
+	public void MakeMap()
 	{
-		PhotonView view = player.GetComponent<PhotonView>();
+		print("甘 积己 矫累");
+		var curmap = PhotonNetwork.Instantiate($"Map/{loadMapName}",
+			GameObject.Find("MapSetPoint").transform.position, Quaternion.identity);
 
-		if (view != null)
-		{
-			photonView.RPC("MakeMap", RpcTarget.MasterClient, loadMapName);
-		}
+		if (curmap != null) { print($"{curmap.name}"); }
+
+		curMapName = curmap.name;
+		print($"甘 积己 肯丰 : {curMapName}");
 	}
 
+	[PunRPC]
+	private void SetCurrentMapSpawnPoint()
+	{
+		var map = GameObject.Find($"{curMapName}");
+
+		currentMapSpawnPoint = map.transform.Find("PlayerMovePoint").position;
+	}
+
+
+	// 甘 力芭
 	public void PlayerDeleteMap(GameObject player)
 	{
         PhotonView view = player.GetComponent<PhotonView>();
 
-        if (view != null && view.Owner.IsMasterClient == true)
-        {
-            DeleteMap();
-        }
-        else if (view != null && view.Owner.IsMasterClient == false)
-        {
-            photonView.RPC("DeleteMap", RpcTarget.MasterClient);
-        }
+		if(view != null)
+		{
+			if (view.Owner.IsMasterClient)
+			{
+				DeleteMap();
+			}
+			else
+			{
+				photonView.RPC("DeleteMap", RpcTarget.MasterClient);
+			}
+
+			photonView.RPC("DeleteCurrentMapSpawnPoint", RpcTarget.AllBuffered);
+		}
     }
 
 	[PunRPC]
@@ -119,7 +138,14 @@ public class SceneMapLoadManager : MonoBehaviourPun, IPunObservable
 		}
 	}
 
-    private void OnSceneUnLoad(Scene scene)
+	[PunRPC]
+	private void DeleteCurrentMapSpawnPoint()
+	{
+		currentMapSpawnPoint = basecampSpawnPoint;
+	}
+
+
+	private void OnSceneUnLoad(Scene scene)
 	{
 		Debug.Log($"辆丰等 纠 : {scene.name}");
 
