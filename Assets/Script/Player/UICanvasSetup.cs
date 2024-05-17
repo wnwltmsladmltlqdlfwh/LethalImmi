@@ -1,33 +1,41 @@
 using Photon.Pun;
 using System.Collections;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class UICanvasSetup : MonoBehaviour
 {
 	PhotonView phView;
-	public GameObject localPlayer;
 
-	private IEnumerator Start()
+	public GameObject myUIPrefab;
+	public Image curStamina;
+	public Image curHealth;
+	public CanvasGroup damageOverlay;
+	public TextMeshProUGUI promptText;
+	public Image interactingCharger;
+	public PlayerMenu menuCanvas;
+	public Transform inventory;
+
+	public void InitCanvas()
 	{
-		phView = GetComponent<PhotonView>();
+		UIManager.Instance.staminaImage = curStamina;
+		UIManager.Instance.healthImage = curHealth;
+		UIManager.Instance.damageOverlay = damageOverlay;
+		UIManager.Instance.promptText = promptText;
+		UIManager.Instance.interactingCharger = interactingCharger;
+		UIManager.Instance.p_Menu = menuCanvas;
 
-        foreach (var player in GameObject.FindGameObjectsWithTag("Player"))
-        {
-            if (player.GetPhotonView().IsMine == true)
-            {
-                localPlayer = player;
-            }
-        }
+		UIManager.Instance.p_Menu.gameObject.SetActive(false);
 
-        this.gameObject.SetActive(phView.IsMine);
-
-		if (phView.IsMine)
+		foreach (var slot in inventory.GetComponentsInChildren<Image>())
 		{
-			PlayerSpawnManager.Instance.InitCanvas(this.gameObject, localPlayer);
+			if (slot.gameObject.name.Contains("Slot") == true)
+			{
+				UIManager.Instance.inventorySlots.Add(slot);
+			}
 		}
 
-		localPlayer.GetComponent<PlayerInventory>().invenDataChanged?.Invoke();
-
-		yield return null;
+		UIManager.Instance.invenDataChanged?.Invoke();
 	}
 }

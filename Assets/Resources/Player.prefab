@@ -2353,10 +2353,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e9cb4e6fcd075f54d84c391fe397fd83, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  promptText: {fileID: 0}
-  interactingCharger: {fileID: 0}
-  p_Menu: {fileID: 0}
-  inventorySlots: []
 --- !u!114 &4553822545986823525
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2372,12 +2368,9 @@ MonoBehaviour:
   health: 0
   maxHealth: 100
   healthAmount: 0
-  healthImage: {fileID: 0}
   isDead: 0
   stamina: 0
   staminaAmount: 0
-  staminaImage: {fileID: 0}
-  aliveUIPanel: {fileID: 0}
 --- !u!114 &955688951098093546
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2418,7 +2411,6 @@ MonoBehaviour:
   shakeTime: 0.5
   shakeSpeed: 3
   shakeAmount: 2
-  damageOverlay: {fileID: 0}
 --- !u!114 &5299911236305462896
 MonoBehaviour:
   m_ObjectHideFlags: 0

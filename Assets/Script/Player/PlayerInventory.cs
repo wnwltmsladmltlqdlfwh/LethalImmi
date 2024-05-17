@@ -6,8 +6,6 @@ public class PlayerInventory : MonoBehaviour
 {
     public ItemData[] invenData = new ItemData[4];
     public int[] invenSellPrice = new int[4];
-    public delegate void InvenDataChanged();
-    public InvenDataChanged invenDataChanged;
     public int currentSlot = 0;
 
     [SerializeField]
@@ -15,18 +13,19 @@ public class PlayerInventory : MonoBehaviour
 
     [SerializeField]
     private Transform handItemPos;
+
     private GameObject[] itemPrefabs = new GameObject[4];
 
 	private void Start()
 	{
-        invenDataChanged += HandOnItem;
-        invenDataChanged?.Invoke();
+        UIManager.Instance.invenDataChanged += HandOnItem;
+		UIManager.Instance.invenDataChanged?.Invoke();
 	}
 
 	public void ActiveSlotChange(int value)
     {
         currentSlot = value - 1;
-        invenDataChanged?.Invoke();
+		UIManager.Instance.invenDataChanged?.Invoke();
     }
 
 	public void GetItemData(int curSellPrice, ItemData getItem)
@@ -60,7 +59,7 @@ public class PlayerInventory : MonoBehaviour
             }
         }
 
-        invenDataChanged?.Invoke();
+		UIManager.Instance.invenDataChanged?.Invoke();
     }
 
     public void DropItem()
@@ -74,7 +73,7 @@ public class PlayerInventory : MonoBehaviour
         Destroy(itemPrefabs[currentSlot]);
         if (itemPrefabs[currentSlot] != null) { itemPrefabs[currentSlot] = null; }
 
-        invenDataChanged?.Invoke();
+		UIManager.Instance.invenDataChanged?.Invoke();
     }
 
     private void HandOnItem()

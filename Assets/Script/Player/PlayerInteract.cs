@@ -3,14 +3,11 @@ using UnityEngine;
 
 public class PlayerInteract : MonoBehaviourPunCallbacks
 {
-	private Camera cam;
-
 	[SerializeField]
 	private float distance = 3f; // 카메라가 쏘는 ray의 길이
 	[SerializeField]
 	private LayerMask mask; // ray가 인식하는 Layer
 	private PlayerUI playerUI;
-	PlayerInputAction playerInputAction;
 
 	public Interactable interactable;
 
@@ -21,7 +18,6 @@ public class PlayerInteract : MonoBehaviourPunCallbacks
 	private void Start()
 	{
 		playerUI = GetComponent<PlayerUI>();
-		playerInputAction = GetComponent<PlayerInputAction>();
 	}
 
 	private void Update()
@@ -57,7 +53,7 @@ public class PlayerInteract : MonoBehaviourPunCallbacks
 		{
 			timer = 0f;
 			isPressed = false;
-			gameObject.GetComponent<PlayerUI>().interactingCharger.fillAmount = 0f;
+			UIManager.Instance.interactingCharger.fillAmount = 0f;
 		}
 		else
 		{
@@ -65,7 +61,7 @@ public class PlayerInteract : MonoBehaviourPunCallbacks
 			{
 				timer += Time.deltaTime;
 
-				if (gameObject.GetComponent<PlayerUI>().interactingCharger.fillAmount >= 1f)
+				if (UIManager.Instance.interactingCharger.fillAmount >= 1f)
 				{
 					interactable.GetComponent<Interactable>().BaseInteract();
 					interactable.GetComponent<Interactable>().BaseInteract(this.gameObject);
@@ -73,7 +69,7 @@ public class PlayerInteract : MonoBehaviourPunCallbacks
 					isPressed = false;
 				}
 
-				gameObject.GetComponent<PlayerUI>().interactingCharger.fillAmount = timer / maxTime;
+				UIManager.Instance.interactingCharger.fillAmount = timer / maxTime;
 			}
 			else
 			{

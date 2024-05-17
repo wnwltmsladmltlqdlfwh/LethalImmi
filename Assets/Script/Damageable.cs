@@ -24,7 +24,6 @@ public class Damageable : MonoBehaviour
 	public float shakeTime = 0.5f;
 	public float shakeSpeed = 3f;
 	public float shakeAmount = 2f;
-	public CanvasGroup damageOverlay;
 	private bool overlayOff = false;
 
 
@@ -73,11 +72,11 @@ public class Damageable : MonoBehaviour
 			StartCoroutine(ShowDamageOverlay());
 		}
 
-		if (damageOverlay.alpha != 0f && overlayOff == true)
+		if (UIManager.Instance.damageOverlay.alpha != 0f && overlayOff == true)
 		{
-			damageOverlay.alpha -= Time.deltaTime;
+			UIManager.Instance.damageOverlay.alpha -= Time.deltaTime;
 		}
-		else if (damageOverlay.alpha == 0f)
+		else if (UIManager.Instance.damageOverlay.alpha == 0f)
 		{
 			overlayOff = false;
 		}
@@ -106,7 +105,7 @@ public class Damageable : MonoBehaviour
 
 	IEnumerator ShowDamageOverlay()
 	{
-		damageOverlay.alpha = 1f;
+		UIManager.Instance.damageOverlay.alpha = 1f;
 		yield return new WaitForSeconds(2f);
 		overlayOff = true;
 	}
