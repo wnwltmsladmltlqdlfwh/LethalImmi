@@ -1,4 +1,9 @@
+using Photon.Pun;
+using System;
 using System.Collections;
+using System.Threading;
+using System.Timers;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -76,7 +81,7 @@ public class PlayerInputAction : MonoBehaviour
 		{
 			if (value.isPressed == false)
 			{
-				UIManager.Instance.interactingCharger.fillAmount = 0f;
+				gameObject.GetComponent<PlayerUI>().interactingCharger.fillAmount = 0f;
 			}
 
 			if (playerInteract.interactable.GetComponent<Interactable>().needLongPush == true)

@@ -12,6 +12,7 @@ public class SceneMapLoadManager : MonoBehaviourPun, IPunObservable
 	public string curMapName = null;
 
     public Vector3 currentMapSpawnPoint;
+
     public Vector3 basecampSpawnPoint;
 
     private void Awake()
@@ -43,20 +44,11 @@ public class SceneMapLoadManager : MonoBehaviourPun, IPunObservable
 	{
 		Debug.Log($"로드된 씬 : {scene.name} / 로드 모드 : {mode}");
 
-		if(scene.name == "MainScene")
-		{
-			UIManager.Instance.cameraObject.gameObject.SetActive(false);
-			UIManager.Instance.uiObject.gameObject.SetActive(false);
-		}
-
 		if(scene.name == "StartScene")
 		{
 			GameManager.Instance.GameStart();
 			basecampSpawnPoint = GameObject.Find("OutDoorPoint").transform.position;
-
-			UIManager.Instance.cameraObject.gameObject.SetActive(true);
-			UIManager.Instance.uiObject.gameObject.SetActive(true);
-		}
+        }
 	}
 
 	public void SetCurrentMap(string mapName, GameObject player)
@@ -66,15 +58,23 @@ public class SceneMapLoadManager : MonoBehaviourPun, IPunObservable
 		if(view == null) { return; }
 
 
-		if (DataManager.Instance.mapDataDic.ContainsKey(mapName) == false)
+		if (mapName == string.Empty)
 		{
 			print("맵 세팅 취소");
-			photonView.RPC("MapNameSet", RpcTarget.AllBuffered, string.Empty);
+			photonView.RPC("MapNameSet", RpcTarget.AllBuffered, mapName);
 		}
 		else
 		{
-			print("맵 세팅 성공");
-			photonView.RPC("MapNameSet", RpcTarget.AllBuffered, mapName);
+			if (DataManager.Instance.mapDataDic.ContainsKey(mapName) == false)
+			{
+				print("맵 세팅 실패");
+				return;
+			}
+			else
+			{
+				print("맵 세팅 성공");
+				photonView.RPC("MapNameSet", RpcTarget.AllBuffered, mapName);
+			}
 		}
     }
 

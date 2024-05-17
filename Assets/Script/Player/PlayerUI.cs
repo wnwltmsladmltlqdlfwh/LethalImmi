@@ -5,11 +5,19 @@ using UnityEngine.UI;
 
 public class PlayerUI : MonoBehaviour
 {
+    public TextMeshProUGUI promptText; // 시야에 닿은 상호작용 오브젝트에 대한 텍스트
+    public Image interactingCharger; // 길게 눌러서 상호작용하는 오브젝트의 진행도 표시 UI
+
+    public PlayerMenu p_Menu;
+
+    public List<Image> inventorySlots;
+	
+
 	private void Start()
 	{
         if(gameObject.GetComponent<PlayerInventory>() != null)
         {
-			UIManager.Instance.invenDataChanged += ChangedInventoryUI;
+            gameObject.GetComponent<PlayerInventory>().invenDataChanged += ChangedInventoryUI;
 		}
 	}
 
@@ -17,11 +25,11 @@ public class PlayerUI : MonoBehaviour
     {
         if (promptValue != string.Empty)
         {
-            UIManager.Instance.promptText.text = "[E] " + promptValue;
+            promptText.text = "[E] " + promptValue;
         }
         else
         {
-            UIManager.Instance.promptText.text = string.Empty;
+            promptText.text = string.Empty;
         }
     }
 
@@ -30,9 +38,9 @@ public class PlayerUI : MonoBehaviour
 		ItemData[] isInvenData = gameObject.GetComponent<PlayerInventory>().invenData;
         int activeSlot = gameObject.GetComponent<PlayerInventory>().currentSlot;
 
-		for (int i = 0; i < UIManager.Instance.inventorySlots.Count; i++)
+		for (int i = 0; i < inventorySlots.Count; i++)
         {
-            var icon = UIManager.Instance.inventorySlots[i].transform.Find("Icon").GetComponent<Image>();
+            var icon = inventorySlots[i].transform.Find("Icon").GetComponent<Image>();
 
             if (isInvenData[i] != null)
             {
@@ -45,20 +53,20 @@ public class PlayerUI : MonoBehaviour
                 icon.enabled = false;
             }
 
-            UIManager.Instance.inventorySlots[i].transform.Find("HighLight").gameObject.SetActive(i == activeSlot);
+            inventorySlots[i].transform.Find("HighLight").gameObject.SetActive(i == activeSlot);
         }
     }
 
     public void OnMenuPanel()
     {
-        if(UIManager.Instance.p_Menu != null && UIManager.Instance.p_Menu.gameObject.activeSelf == false)
+        if(p_Menu != null && p_Menu.gameObject.activeSelf == false)
         {
-            UIManager.Instance.p_Menu.gameObject.SetActive(true);
+            p_Menu.gameObject.SetActive(true);
             Cursor.lockState = CursorLockMode.None;
         }
-        else if (UIManager.Instance.p_Menu != null && UIManager.Instance.p_Menu.gameObject.activeSelf == true)
+        else if (p_Menu != null && p_Menu.gameObject.activeSelf == true)
         {
-            UIManager.Instance.p_Menu.gameObject.SetActive(false);
+            p_Menu.gameObject.SetActive(false);
             Cursor.lockState = CursorLockMode.Locked;
         }
     }

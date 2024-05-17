@@ -18,8 +18,6 @@ public class StartSceneDoor : Interactable
 
     protected override void Interact(GameObject player)
     {
-        if(SceneMapLoadManager.Instance.currentMapSpawnPoint == Vector3.zero) { return; }
-
         if(SceneMapLoadManager.Instance.currentMapSpawnPoint != null)
         {
             player.transform.position = SceneMapLoadManager.Instance.currentMapSpawnPoint;
