@@ -18,6 +18,5 @@ MonoBehaviour:
   item_buyprice: 0
   item_weight: 3
   item_twoHanded: 0
-  item_prefab: {fileID: 1008849628155272, guid: 6d3159bc7660ebd48b125aa2237f1bf6, type: 3}
-  item_icon: {fileID: 21300000, guid: 3dc57d6d132ca7348b1218210400cb67, type: 3}
+  item_prefab_path: Item/Multitool
   item_icon_path: Item/Icon/icon_wire-cutters_LP

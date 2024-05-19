@@ -35,17 +35,17 @@ public class PlayerUI : MonoBehaviour
 
 	public void ChangedInventoryUI()
     {
-		ItemData[] isInvenData = gameObject.GetComponent<PlayerInventory>().invenData;
+		string[] isInvenData = gameObject.GetComponent<PlayerInventory>().invenKeyData;
         int activeSlot = gameObject.GetComponent<PlayerInventory>().currentSlot;
 
 		for (int i = 0; i < inventorySlots.Count; i++)
         {
             var icon = inventorySlots[i].transform.Find("Icon").GetComponent<Image>();
 
-            if (isInvenData[i] != null)
+            if (isInvenData[i] != string.Empty)
             {
                 icon.enabled = true;
-                icon.sprite = isInvenData[i].Item_Icon;
+                icon.sprite = Resources.Load<Sprite>(DataManager.Instance.itemDataDic[isInvenData[i]].Item_Icon_Path);
             }
             else
             {

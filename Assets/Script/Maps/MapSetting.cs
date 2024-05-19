@@ -6,8 +6,7 @@ public class MapSetting : MonoBehaviourPun
 	[SerializeField]
 	Transform playerMovePoint;
 
-	[SerializeField]
-	Transform itemSpawnPoint;
+	public Transform itemSpawnPoint;
 
 	private void OnEnable()
 	{

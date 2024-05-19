@@ -10,11 +10,11 @@ public class ItemObject : Interactable, IPunObservable
 	public int sellPrice;
 	public int buyPrice;
 	public int weight;
-	public bool twoHanded;
-	public Sprite icon;
-	public string prefab_name;
+	public string prefab_path;
 	public string icon_Path;
+	public string item_Key;
 
+	public Sprite icon;
 	GameObject itemInfoUI;
 
 
@@ -24,10 +24,10 @@ public class ItemObject : Interactable, IPunObservable
 		
 		itemInfoUI = (GameObject)Resources.Load("Item/ItemCanvas");
 
-		if(itemData != null)
-		{
-			photonView.RPC("SetItemInfo", RpcTarget.AllBuffered);
-		}
+		//if(itemData != null)
+		//{
+		//	photonView.RPC("SetItemInfo", RpcTarget.AllBuffered);
+		//}
 
 		if (item_name != null)
 		{
@@ -35,58 +35,99 @@ public class ItemObject : Interactable, IPunObservable
 		}
 	}
 
-	public void SetItemInfo()
+	public void SetItemInfo(string itemKey)
 	{
-		item_name = itemData.Item_Name;
-		sellPrice = UnityEngine.Random.Range(itemData.Item_MinPrice, itemData.Item_MaxPrice);
-		weight = itemData.Item_Weight;
-		twoHanded = itemData.Item_TwoHanded;
-		icon = itemData.Item_Icon;
-		prefab_name = itemData.Item_PrefabName;
+        ItemData itemDataValue = this.itemData;
 
-		photonView.RPC("SyncItemInfo", RpcTarget.AllBuffered, item_name, sellPrice, buyPrice, weight, twoHanded, itemData.Item_Icon_Path, prefab_name);
+		if (itemData != null)
+		{
+			item_name = itemData.Item_Name;
+			sellPrice = UnityEngine.Random.Range(itemData.Item_MinPrice, itemData.Item_MaxPrice);
+			weight = itemData.Item_Weight;
+			icon_Path = itemData.Item_Icon_Path;
+            prefab_path = itemData.Item_PrefabPath;
+			item_Key = itemKey;
+        }
+
+		photonView.RPC("SyncItemInfo", RpcTarget.AllBuffered,
+			item_name, sellPrice, buyPrice, weight, icon_Path, prefab_path, item_Key);
 	}
 
 	[PunRPC]
-	private void SyncItemInfo(string name, int sPrice, int bPrice, int w, bool tHanded, string i_path, string pName)
+	private void SyncItemInfo(string name, int sPrice, int bPrice, int w, string i_path, string pPath, string key)
 	{
 		item_name = name;
 		sellPrice = sPrice;
 		buyPrice = bPrice;
 		weight = w;
-		twoHanded = tHanded;
-		prefab_name = pName;
+        prefab_path = pPath;
 		icon_Path = i_path;
+		item_Key = key;
 
-		icon = Resources.Load<Sprite>(icon_Path); // 아이콘 로드
+		LoadIcon();
 	}
-
-	protected override void Interact(GameObject player)
+    private void LoadIcon()
     {
-		if (player.GetPhotonView())
+        // 아이콘을 경로에서 로드
+        icon = Resources.Load<Sprite>(icon_Path);
+
+        if (icon == null)
+        {
+            Debug.LogWarning($"Failed to load icon at path: {icon_Path}");
+        }
+        else
+        {
+            // 아이콘이 로드된 이후의 처리가 필요하다면 이곳에 추가
+            Debug.Log("Icon loaded successfully.");
+        }
+    }
+
+    protected override void Interact(GameObject player)
+    {
+        var pView = player.GetPhotonView();
+
+		print("Interact 실행");
+
+        if (pView)
 		{
-			if (player.GetPhotonView().Owner.IsMasterClient)
-			{
-				ItemTakeUser(player);
+			if (pView.Owner.IsMasterClient)
+            {
+                print("마스터 클라 확인");
+                ItemTakeUser(pView.ViewID);
 			}
 			else
 			{
-				photonView.RPC("ItemTakeUser", RpcTarget.MasterClient, player);
+                print("리모트 클라 확인");
+                photonView.RPC("ItemTakeUser", RpcTarget.AllBuffered, pView.ViewID);
 			}
 		}
 	}
 
 	[PunRPC]
-	public void ItemTakeUser(GameObject player)
+	public void ItemTakeUser(int pView)
 	{
-		if (player.GetComponent<PlayerInventory>() != null)
+        print("ItemTakeUser 실행");
+
+        PhotonView photonView = PhotonView.Find(pView);
+		if(photonView != null)
 		{
-			if (player.GetComponent<PlayerInventory>().InvenIsFull() == true)
-			{ return; }
+			print("PhotonView ID 확인");
 
-			player.GetComponent<PlayerInventory>().GetItemData(sellPrice, this.itemData);
+			GameObject player = photonView.gameObject;
 
-			PhotonNetwork.Destroy(this.gameObject);
+			PlayerInventory pInven = player.GetComponent<PlayerInventory>();
+
+			if (pInven != null)
+			{
+				if (pInven.InvenIsFull() == true)
+				{
+					print("인벤토리 꽉참 확인");
+					return;
+				}
+
+                pInven.photonView.RPC("GetItemData", RpcTarget.AllBuffered, sellPrice, item_Key, this.photonView.ViewID);
+                //pInven.GetItemData(sellPrice, this.itemData, this.photonView.ViewID);
+			}
 		}
 	}
 
@@ -109,9 +150,9 @@ public class ItemObject : Interactable, IPunObservable
 			stream.SendNext(sellPrice);
 			stream.SendNext(buyPrice);
 			stream.SendNext(weight);
-			stream.SendNext(twoHanded);
-			stream.SendNext(prefab_name);
+			stream.SendNext(prefab_path);
 			stream.SendNext(icon_Path);
+			stream.SendNext(item_Key);
 		}
 		else
 		{
@@ -120,11 +161,9 @@ public class ItemObject : Interactable, IPunObservable
 			sellPrice = (int)stream.ReceiveNext();
 			buyPrice = (int)stream.ReceiveNext();
 			weight = (int)stream.ReceiveNext();
-			twoHanded = (bool)stream.ReceiveNext();
-			prefab_name = (string)stream.ReceiveNext();
+			prefab_path = (string)stream.ReceiveNext();
 			icon_Path = (string)stream.ReceiveNext();
-
-			icon = Resources.Load<Sprite>(icon_Path);
+			item_Key = (string)stream.ReceiveNext();
 		}
 	}
 }

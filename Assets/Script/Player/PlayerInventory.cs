@@ -1,11 +1,10 @@
 using Photon.Pun;
 using UnityEngine;
-using UnityEngine.Assertions.Must;
 
 public class PlayerInventory : MonoBehaviour
 {
-    public ItemData[] invenData = new ItemData[4];
     public int[] invenSellPrice = new int[4];
+    public string[] invenKeyData = new string[4];
     public delegate void InvenDataChanged();
     public InvenDataChanged invenDataChanged;
     public int currentSlot = 0;
@@ -17,10 +16,13 @@ public class PlayerInventory : MonoBehaviour
     private Transform handItemPos;
     private GameObject[] itemPrefabs = new GameObject[4];
 
+    public PhotonView photonView;
+
 	private void Start()
 	{
         invenDataChanged += HandOnItem;
         invenDataChanged?.Invoke();
+        photonView = GetComponent<PhotonView>();
 	}
 
 	public void ActiveSlotChange(int value)
@@ -29,33 +31,45 @@ public class PlayerInventory : MonoBehaviour
         invenDataChanged?.Invoke();
     }
 
-	public void GetItemData(int curSellPrice, ItemData getItem)
+    [PunRPC]
+	public void GetItemData(int curSellPrice, string getItemKey, int itemViewID)
     {
-        for(int i = 0; i < invenData.Length; i++)
+        print("GetItemData ½ÇÇà");
+
+        for (int i = 0; i < invenKeyData.Length; i++)
         {
-            if (invenData[i] != null)
+            if (invenKeyData[i] != string.Empty)
             {
                 continue;
             }
-            else if (invenData[i] == null)
+            else if (invenKeyData[i] == string.Empty)
             {
-                invenData[i] = getItem;
+                invenKeyData[i] = getItemKey;
                 invenSellPrice[i] = curSellPrice;
-                itemPrefabs[i] =
-                    PhotonNetwork.Instantiate($"Item/{invenData[i].Item_PrefabName}", handItemPos.position, Quaternion.identity);
-                if (itemPrefabs[i].GetComponent<Collider>() != null)
+                PhotonView itemPhotonView = PhotonView.Find(itemViewID);
+
+                if(itemPhotonView != null)
                 {
-                    itemPrefabs[i].GetComponent<Collider>().enabled = false;
+                    GameObject itemPrefab = itemPhotonView.gameObject;
+
+                    itemPrefabs[i] = itemPrefab;
+                
+                    if (itemPrefabs[i].GetComponent<Collider>() != null)
+                    {
+                        itemPrefabs[i].GetComponent<Collider>().enabled = false;
+                    }
+                    if (itemPrefabs[i].GetComponent<Rigidbody>() != null)
+                    {
+                        itemPrefabs[i].GetComponent<Rigidbody>().mass = 0f;
+                        itemPrefabs[i].GetComponent<Rigidbody>().freezeRotation = true;
+                        itemPrefabs[i].GetComponent<Rigidbody>().useGravity = false;
+                    }
+
+                    itemPrefabs[i].transform.parent = handItemPos.transform;
+                    itemPrefabs[i].transform.localPosition = Vector3.zero;
+                    itemPrefabs[i].transform.localRotation = Quaternion.identity;
                 }
-                if (itemPrefabs[i].GetComponent<Rigidbody>() != null)
-                {
-                    itemPrefabs[i].GetComponent<Rigidbody>().mass = 0f;
-                    itemPrefabs[i].GetComponent<Rigidbody>().freezeRotation = true;
-                    itemPrefabs[i].GetComponent<Rigidbody>().useGravity = false;
-                }
-                itemPrefabs[i].transform.parent = handItemPos.transform;
-                itemPrefabs[i].transform.localPosition = Vector3.zero;
-                itemPrefabs[i].transform.localRotation = Quaternion.identity;
+                
 				break;
             }
         }
@@ -63,18 +77,35 @@ public class PlayerInventory : MonoBehaviour
         invenDataChanged?.Invoke();
     }
 
-    public void DropItem()
+
+    [PunRPC]
+    public void DropItem(Vector3 dropPos)
     {
-        if (invenData[currentSlot] == null) { return; }
+        if (invenKeyData[currentSlot] == string.Empty) { return; }
 
-        Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
+        if (itemPrefabs[currentSlot] != null)
+        {
+            if (itemPrefabs[currentSlot].GetComponent<Collider>() != null)
+            {
+                itemPrefabs[currentSlot].GetComponent<Collider>().enabled = true;
+            }
+            if (itemPrefabs[currentSlot].GetComponent<Rigidbody>() != null)
+            {
+                itemPrefabs[currentSlot].GetComponent<Rigidbody>().freezeRotation = false;
+                itemPrefabs[currentSlot].GetComponent<Rigidbody>().useGravity = true;
+            }
 
-        ItemSpawnManager.Instance.RequestDropItem(invenSellPrice[currentSlot], invenData[currentSlot], ray.origin + ray.direction * 1f);
-        invenData[currentSlot] = null;
-        Destroy(itemPrefabs[currentSlot]);
-        if (itemPrefabs[currentSlot] != null) { itemPrefabs[currentSlot] = null; }
+            itemPrefabs[currentSlot].transform.SetParent(null);
+            itemPrefabs[currentSlot].transform.localPosition = dropPos;
+            itemPrefabs[currentSlot].transform.localRotation = Quaternion.identity;
 
-        invenDataChanged?.Invoke();
+            invenKeyData[currentSlot] = string.Empty;
+            itemPrefabs[currentSlot] = null;
+            invenSellPrice[currentSlot] = 0;
+
+
+            invenDataChanged?.Invoke();
+        }
     }
 
     private void HandOnItem()
@@ -96,9 +127,9 @@ public class PlayerInventory : MonoBehaviour
 
     public bool InvenIsFull()
     {
-        foreach(ItemData item in invenData)
+        foreach(string item in invenKeyData)
         {
-            if(item == null)
+            if(item == string.Empty)
             {
                 return false;
             }

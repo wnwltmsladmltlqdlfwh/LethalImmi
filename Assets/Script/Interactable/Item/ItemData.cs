@@ -1,7 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 [CreateAssetMenu(fileName = "ItemData", menuName = "Item_ScriptableObject/Data", order = int.MaxValue)]
 public class ItemData : ScriptableObject
@@ -19,9 +16,7 @@ public class ItemData : ScriptableObject
 	[SerializeField]
 	private bool item_twoHanded;
 	[SerializeField]
-	private GameObject item_prefab;
-	[SerializeField]
-	private Sprite item_icon;
+    private string item_prefab_path;
 	[SerializeField]
 	private string item_icon_path;
 	
@@ -31,8 +26,6 @@ public class ItemData : ScriptableObject
 	public int Item_BuyPrice { get { return item_buyprice; } }
 	public int Item_Weight { get { return item_weight; } }
 	public bool Item_TwoHanded { get { return item_twoHanded; } }
-	public string Item_PrefabName { get { return item_prefab.name; } }
-	public GameObject Item_Prefab {  get { return item_prefab; } }
-	public Sprite Item_Icon { get { return item_icon; } }
+    public string Item_PrefabPath { get { return item_prefab_path; } }
 	public string Item_Icon_Path { get { return item_icon_path; } }
 }

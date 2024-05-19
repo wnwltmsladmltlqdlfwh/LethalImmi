@@ -74,6 +74,10 @@ MonoBehaviour:
   - DeleteCurrentMapSpawnPoint
   - SetCurrentMapSpawnPoint
   - SyncItemInfo
+  - InitializeItem
+  - RequestInteract
+  - GetItemData
+  - DropItem
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

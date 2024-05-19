@@ -2390,15 +2390,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11af8da181e555741996aae0d64158c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  invenData:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
   invenSellPrice: 00000000000000000000000000000000
+  invenKeyData:
+  - 
+  - 
+  - 
+  - 
   currentSlot: 0
   dropPoint: {fileID: 4784152258639396528}
   handItemPos: {fileID: 2017231436991800547}
+  photonView: {fileID: 0}
 --- !u!114 &2387428676239934847
 MonoBehaviour:
   m_ObjectHideFlags: 0

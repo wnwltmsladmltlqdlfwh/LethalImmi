@@ -196,6 +196,7 @@ MonoBehaviour:
   sellPrice: 0
   buyPrice: 0
   weight: 0
-  twoHanded: 0
+  prefab_path: 
+  icon_Path: 
+  item_Key: 
   icon: {fileID: 0}
-  prefab_name: 

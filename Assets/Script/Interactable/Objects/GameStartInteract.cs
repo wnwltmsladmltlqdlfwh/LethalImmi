@@ -1,5 +1,4 @@
 using Photon.Pun;
-using System.Collections;
 using UnityEngine;
 
 public class GameStartInteract : Interactable
@@ -28,11 +27,12 @@ public class GameStartInteract : Interactable
         {
             if (player.GetPhotonView().Owner == PhotonNetwork.MasterClient)
             {
+                print("상호작용 플레이어는 마스터");
                 SceneMapLoadManager.Instance.MakeMap();
 			}
             else
             {
-                PhotonView view = player.GetPhotonView();
+                print("상호작용 플레이어는 리모트");
                 photonView.RPC("RequestInteract", RpcTarget.MasterClient);
             }
 		}
@@ -44,6 +44,6 @@ public class GameStartInteract : Interactable
         if(PhotonNetwork.IsMasterClient)
         {
 			SceneMapLoadManager.Instance.MakeMap();
-		}
+        }
     }
 }

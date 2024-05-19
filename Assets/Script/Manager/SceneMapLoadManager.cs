@@ -96,14 +96,23 @@ public class SceneMapLoadManager : MonoBehaviourPun, IPunObservable
 
 		curMapName = curmap.name;
 		print($"¸Ê »ý¼º ¿Ï·á : {curMapName}");
-	}
+
+		photonView.RPC("SetCurrentMapSpawnPoint", RpcTarget.AllBuffered);
+
+		var map = GameObject.Find($"{curMapName}");
+
+        ItemSpawnManager.Instance.ItemSpawn(Random.Range(5, 10), map.transform.Find("ItemSpawnPoint"));
+    }
 
 	[PunRPC]
 	private void SetCurrentMapSpawnPoint()
 	{
-		var map = GameObject.Find($"{curMapName}");
+		if (PhotonNetwork.IsMasterClient)
+		{
+			var map = GameObject.Find($"{curMapName}");
 
-		currentMapSpawnPoint = map.transform.Find("PlayerMovePoint").position;
+			currentMapSpawnPoint = map.transform.Find("PlayerMovePoint").position;
+		}
 	}
 
 
@@ -165,11 +174,15 @@ public class SceneMapLoadManager : MonoBehaviourPun, IPunObservable
 	{
 		if(stream.IsWriting)
 		{
+			stream.SendNext(loadMapName);
 			stream.SendNext(curMapName);
+			stream.SendNext(currentMapSpawnPoint);
 		}
         else
         {
-			curMapName = (string)stream.ReceiveNext();
+            loadMapName = (string)stream.ReceiveNext();
+            curMapName = (string)stream.ReceiveNext();
+            currentMapSpawnPoint = (Vector3)stream.ReceiveNext();
         }
     }
 }

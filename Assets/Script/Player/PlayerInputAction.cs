@@ -1,9 +1,6 @@
 using Photon.Pun;
 using System;
 using System.Collections;
-using System.Threading;
-using System.Timers;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -110,7 +107,11 @@ public class PlayerInputAction : MonoBehaviour
 		if (value.isPressed)
 		{
 			int a = int.Parse(value.Get().ToString());
-			gameObject.GetComponent<PlayerInventory>().ActiveSlotChange(a);
+            var pInven = gameObject.GetComponent<PlayerInventory>();
+			if (pInven.photonView.IsMine)
+			{
+				gameObject.GetComponent<PlayerInventory>().ActiveSlotChange(a);
+			}
 		}
 	}
 
@@ -127,7 +128,20 @@ public class PlayerInputAction : MonoBehaviour
 
 		if (value.isPressed)
 		{
-			gameObject.GetComponent<PlayerInventory>().DropItem();
+			var pInven = gameObject.GetComponent<PlayerInventory>();
+
+            // 로컬 클라이언트에서만 드롭 위치를 계산합니다.
+            if (pInven.photonView.IsMine)
+            {
+                var camParent = FindObjectOfType<CameraSetup>().gameObject;
+                Camera camera = camParent.GetComponentInChildren<Camera>();
+                Ray ray = new Ray(camera.transform.position, camera.transform.forward);
+                Vector3 dropPos = ray.origin + ray.direction * 1f;
+
+				// 드롭 위치를 모든 클라이언트에 전달합니다.
+				pInven.DropItem(dropPos);
+                pInven.photonView.RPC("DropItem", RpcTarget.OthersBuffered, dropPos);
+            }
 		}
 	}
 

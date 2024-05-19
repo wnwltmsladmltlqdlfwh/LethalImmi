@@ -7,7 +7,7 @@ public class DataManager : MonoBehaviour
     public static DataManager Instance = null;
 
 	public Dictionary<string, ItemData> itemDataDic = new Dictionary<string, ItemData>();
-
+    public Dictionary<string, string> itemPrefabDic = new Dictionary<string, string>();
     public Dictionary<string, GameObject> mapDataDic = new Dictionary<string, GameObject>();
 
     private void Awake()
@@ -34,6 +34,7 @@ public class DataManager : MonoBehaviour
                 print($"{item.Item_Name}은/는 중복됩니다.");
             }
 			itemDataDic.Add(item.Item_Name, item);
+            itemPrefabDic.Add(item.Item_Name, item.Item_PrefabPath);
 		}
 
         GameObject[] mapDatas = Resources.LoadAll<GameObject>("Map");
