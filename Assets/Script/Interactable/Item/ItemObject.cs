@@ -1,4 +1,5 @@
 using Photon.Pun;
+using System;
 using TMPro;
 using UnityEngine;
 
@@ -12,6 +13,7 @@ public class ItemObject : Interactable, IPunObservable
 	public int weight;
 	public string prefab_path;
 	public string icon_Path;
+	public string itemdata_Path;
 	public string item_Key;
 
 	public Sprite icon;
@@ -24,20 +26,15 @@ public class ItemObject : Interactable, IPunObservable
 		
 		itemInfoUI = (GameObject)Resources.Load("Item/ItemCanvas");
 
-		//if(itemData != null)
-		//{
-		//	photonView.RPC("SetItemInfo", RpcTarget.AllBuffered);
-		//}
-
 		if (item_name != null)
 		{
 			promptMessage = item_name;
 		}
 	}
 
-	public void SetItemInfo(string itemKey)
+	public void SetItemInfo(string itemKey, string itemDataPath)
 	{
-        ItemData itemDataValue = this.itemData;
+		this.itemData = (ItemData)Resources.Load(itemDataPath);
 
 		if (itemData != null)
 		{
@@ -46,22 +43,25 @@ public class ItemObject : Interactable, IPunObservable
 			weight = itemData.Item_Weight;
 			icon_Path = itemData.Item_Icon_Path;
             prefab_path = itemData.Item_PrefabPath;
+			itemdata_Path = itemDataPath;
 			item_Key = itemKey;
         }
 
 		photonView.RPC("SyncItemInfo", RpcTarget.AllBuffered,
-			item_name, sellPrice, buyPrice, weight, icon_Path, prefab_path, item_Key);
+			itemDataPath, item_name, sellPrice, buyPrice, weight, icon_Path, prefab_path, item_Key);
 	}
 
 	[PunRPC]
-	private void SyncItemInfo(string name, int sPrice, int bPrice, int w, string i_path, string pPath, string key)
+	private void SyncItemInfo(string itemDataPath, string name, int sPrice, int bPrice, int w, string i_path, string pPath, string key)
 	{
+		itemData = (ItemData)Resources.Load(itemDataPath);
 		item_name = name;
 		sellPrice = sPrice;
 		buyPrice = bPrice;
 		weight = w;
         prefab_path = pPath;
 		icon_Path = i_path;
+		itemdata_Path = itemDataPath;
 		item_Key = key;
 
 		LoadIcon();
@@ -90,16 +90,7 @@ public class ItemObject : Interactable, IPunObservable
 
         if (pView)
 		{
-			if (pView.Owner.IsMasterClient)
-            {
-                print("마스터 클라 확인");
-                ItemTakeUser(pView.ViewID);
-			}
-			else
-			{
-                print("리모트 클라 확인");
-                photonView.RPC("ItemTakeUser", RpcTarget.AllBuffered, pView.ViewID);
-			}
+			photonView.RPC("ItemTakeUser", RpcTarget.AllBuffered, pView.ViewID);
 		}
 	}
 
@@ -126,7 +117,8 @@ public class ItemObject : Interactable, IPunObservable
 				}
 
                 pInven.photonView.RPC("GetItemData", RpcTarget.AllBuffered, sellPrice, item_Key, this.photonView.ViewID);
-                //pInven.GetItemData(sellPrice, this.itemData, this.photonView.ViewID);
+
+				this.gameObject.SetActive(false);
 			}
 		}
 	}
@@ -141,10 +133,18 @@ public class ItemObject : Interactable, IPunObservable
 		canvasPrefab.transform.Find("SellPrice").GetComponent<TextMeshProUGUI>().text = sellPrice.ToString();
 	}
 
+	[PunRPC]
+	public void SellThisItem()
+	{
+		GameManager.Instance.gameCount -= this.sellPrice;
+		Destroy(gameObject);
+	}
+
 	public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
 	{
 		if (stream.IsWriting)
 		{
+			Debug.Log("데이터 발신");
 			// 마스터 클라이언트에서 아이템의 데이터를 전송
 			stream.SendNext(item_name);
 			stream.SendNext(sellPrice);
@@ -153,17 +153,26 @@ public class ItemObject : Interactable, IPunObservable
 			stream.SendNext(prefab_path);
 			stream.SendNext(icon_Path);
 			stream.SendNext(item_Key);
+			stream.SendNext(itemdata_Path);
 		}
 		else
 		{
-			// 리모트 플레이어에서 아이템의 데이터를 수신
-			item_name = (string)stream.ReceiveNext();
-			sellPrice = (int)stream.ReceiveNext();
-			buyPrice = (int)stream.ReceiveNext();
-			weight = (int)stream.ReceiveNext();
-			prefab_path = (string)stream.ReceiveNext();
-			icon_Path = (string)stream.ReceiveNext();
-			item_Key = (string)stream.ReceiveNext();
+			try
+			{
+				// 리모트 플레이어에서 아이템의 데이터를 수신
+				item_name = (string)stream.ReceiveNext();
+				sellPrice = (int)stream.ReceiveNext();
+				buyPrice = (int)stream.ReceiveNext();
+				weight = (int)stream.ReceiveNext();
+				prefab_path = (string)stream.ReceiveNext();
+				icon_Path = (string)stream.ReceiveNext();
+				item_Key = (string)stream.ReceiveNext();
+				itemdata_Path = (string)stream.ReceiveNext();
+			}
+			catch(Exception e)
+			{
+				Debug.LogError("Error receiving data: " + e.Message);
+			}
 		}
 	}
 }

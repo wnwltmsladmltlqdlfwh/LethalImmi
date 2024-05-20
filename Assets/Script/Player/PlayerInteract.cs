@@ -88,11 +88,12 @@ public class PlayerInteract : MonoBehaviourPunCallbacks
 		{
 			var monster = hitMonster.collider.GetComponent<MageGhostAI>();
 
-
 			if(monster != null)
 			{
-				monster.SetPlayerVisible(true);
-            }
+				//monster.SetPlayerVisible(true);
+				monster.GetComponent<PhotonView>().RPC("SetPlayerVisible", RpcTarget.AllBuffered, true);
+
+			}
 			else
 			{
 				return;

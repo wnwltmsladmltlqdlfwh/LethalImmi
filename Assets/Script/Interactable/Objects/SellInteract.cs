@@ -1,7 +1,6 @@
 using TMPro;
 using UnityEngine;
 using Photon.Pun;
-using Unity.VisualScripting;
 
 public class SellInteract : Interactable
 {
@@ -16,7 +15,15 @@ public class SellInteract : Interactable
 
     private void Update()
     {
-        needMoneyTmp.text = GameManager.Instance.gameCount.ToString();
+        if(GameManager.Instance.gameStarted == false)
+        {
+            needMoneyTmp.text = "대기중..";
+		}
+        else
+        {
+            needMoneyTmp.text =
+                $"현재 금액 : {GameManager.Instance.gameCount.ToString()}\n한도 : {GameManager.Instance.overCount.ToString()}";
+        }
     }
 
     protected override void Interact(GameObject player)
@@ -27,16 +34,18 @@ public class SellInteract : Interactable
 
         if (inven != null)
         {
-            if (PhotonNetwork.IsMasterClient)
+            if (player.GetPhotonView().Owner.IsMasterClient)
             {
                 for (int i = 0; i < inven.invenSellPrice.Length; i++)
                 {
-                    SellingItem(inven.invenSellPrice[i]);
-                    inven.invenSellPrice[i] = 0;
+                    if(inven.invenSellPrice[i] == 0) { continue; }
+
+					inven.itemPrefabs[i].SetActive(true);
+					inven.itemPrefabs[i].GetComponent<ItemObject>().SellThisItem();
+
+					inven.invenSellPrice[i] = 0;
                     inven.invenKeyData[i] = string.Empty;
                     inven.itemPrefabs[i] = null;
-                    Transform child = inven.handItemPos.GetChild(i);
-                    child.gameObject.IsDestroyed();
                     inven.invenDataChanged?.Invoke();
                 }
             }
@@ -44,20 +53,23 @@ public class SellInteract : Interactable
             {
                 for (int i = 0; i < inven.invenSellPrice.Length; i++)
                 {
-                    photonView.RPC("SellingItem", RpcTarget.MasterClient, inven.invenSellPrice[i]);
-                    inven.invenSellPrice[i] = 0;
+					if (inven.invenSellPrice[i] == 0) { continue; }
+
+					inven.itemPrefabs[i].SetActive(true);
+                    inven.itemPrefabs[i].GetComponent<ItemObject>().GetComponent<PhotonView>().RPC(
+						"SellThisItem", RpcTarget.MasterClient);
+
+					inven.invenSellPrice[i] = 0;
                     inven.invenKeyData[i] = string.Empty;
                     inven.itemPrefabs[i] = null;
-                    Transform child = inven.handItemPos.GetChild(i);
-                    child.gameObject.IsDestroyed();
-                    inven.invenDataChanged?.Invoke();
+					inven.invenDataChanged?.Invoke();
                 }
             }
         }
     }
 
     [PunRPC]
-    void SellingItem(int sell)
+    void GameCountDown(int sell)
     {
         if(PhotonNetwork.IsMasterClient)
         {

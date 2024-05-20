@@ -198,5 +198,6 @@ MonoBehaviour:
   weight: 0
   prefab_path: 
   icon_Path: 
+  itemdata_Path: 
   item_Key: 
   icon: {fileID: 0}

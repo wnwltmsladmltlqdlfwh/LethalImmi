@@ -12,22 +12,18 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     private void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            if (Instance != this)
-                Destroy(this.gameObject);
-        }
-    }
+		if (Instance != null && Instance != this)
+		{
+			Destroy(this.gameObject);
+			return;
+		}
+		Instance = this;
+		DontDestroyOnLoad(this.gameObject);
+	}
 
 	public override void OnEnable()
 	{
 		base.OnEnable();	//PhotonNetwork.AddCallbackTarget(this); 메서드로 Callback 받을 대상 지정
-		PhotonNetwork.AutomaticallySyncScene = true;
 		Debug.Log("연결 상태 : " + PhotonNetwork.IsConnected);
 	}
 
@@ -75,12 +71,20 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public override void OnLeftRoom()
 	{
 		base.OnLeftRoom();
-		PhotonNetwork.LoadLevel("MainScene");
+		PhotonNetwork.AutomaticallySyncScene = false;
+		Destroy(gameObject);
 	}
 
 	public override void OnJoinedLobby()
 	{
 		base.OnJoinedLobby();
+		PhotonNetwork.AutomaticallySyncScene = true;
+	}
+
+	public override void OnLeftLobby()
+	{
+		base.OnLeftLobby();
+		PhotonNetwork.AutomaticallySyncScene = false;
 	}
 
 	public override void OnPlayerEnteredRoom(Player newPlayer)
@@ -90,20 +94,11 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
 	public override void OnPlayerLeftRoom(Player otherPlayer)
 	{
-		if (otherPlayer == PhotonNetwork.MasterClient)
+		if (otherPlayer.IsMasterClient == true)
 		{
-			GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
-
-			foreach (GameObject p in players)
-			{
-				if (p.GetComponent<PhotonView>().IsMine == true)
-				{
-					PhotonNetwork.Destroy(p);
-				}
-			}
+			PhotonNetwork.AutomaticallySyncScene = false;
 
 			PhotonNetwork.LeaveRoom();
-			PhotonNetwork.LoadLevel("MainScene");
 		}
 	}
 }

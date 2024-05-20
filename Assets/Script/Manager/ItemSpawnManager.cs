@@ -2,7 +2,7 @@ using Photon.Pun;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ItemSpawnManager : MonoBehaviourPun
+public class ItemSpawnManager : MonoBehaviourPunCallbacks
 {
 	public static ItemSpawnManager Instance = null;
 
@@ -13,17 +13,14 @@ public class ItemSpawnManager : MonoBehaviourPun
 
     private void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            if (Instance != this)
-                Destroy(this.gameObject);
-        }
-    }
+		if (Instance != null && Instance != this)
+		{
+			Destroy(this.gameObject);
+			return;
+		}
+		Instance = this;
+		DontDestroyOnLoad(this.gameObject);
+	}
 
     private void Start()
 	{
@@ -53,16 +50,13 @@ public class ItemSpawnManager : MonoBehaviourPun
 				itemPrefab.AddComponent<ItemObject>();
 			}
 
-			itemPrefab.GetComponent<ItemObject>().itemData =
-					DataManager.Instance.itemDataDic[itemKeyList[randomInt]];
-
-			photonView.RPC("InitializeItem", RpcTarget.AllBuffered, itemPrefab.GetPhotonView().ViewID, itemKeyList[randomInt]);
+			photonView.RPC("InitializeItem", RpcTarget.AllBuffered, itemPrefab.GetPhotonView().ViewID, itemKeyList[randomInt], DataManager.Instance.itemDataDic[itemKeyList[randomInt]].ItemData_Path);
 		}
 	}
 
 
 	[PunRPC]
-	public void InitializeItem(int viewID, string itemKey)
+	public void InitializeItem(int viewID, string itemKey, string itemDataPath)
 	{
 		PhotonView itemView = PhotonView.Find(viewID);
 		if (itemView != null)
@@ -70,8 +64,15 @@ public class ItemSpawnManager : MonoBehaviourPun
 			ItemObject itemObject = itemView.GetComponent<ItemObject>();
 			if (itemObject != null)
 			{
-				itemObject.SetItemInfo(itemKey);
+				itemObject.SetItemInfo(itemKey, itemDataPath);
 			}
 		}
+	}
+
+	public override void OnLeftRoom()
+	{
+		base.OnLeftRoom();
+
+		Destroy(gameObject);
 	}
 }

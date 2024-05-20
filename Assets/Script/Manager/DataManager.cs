@@ -14,17 +14,14 @@ public class DataManager : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            if (Instance != this)
-                Destroy(this.gameObject);
-        }
-    }
+		if (Instance != null && Instance != this)
+		{
+			Destroy(this.gameObject);
+			return;
+		}
+		Instance = this;
+		DontDestroyOnLoad(this.gameObject);
+	}
 
     private void Start()
 	{

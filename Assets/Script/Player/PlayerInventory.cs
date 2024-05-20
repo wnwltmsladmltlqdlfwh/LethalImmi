@@ -63,13 +63,8 @@ public class PlayerInventory : MonoBehaviour
                         itemPrefabs[i].GetComponent<Rigidbody>().freezeRotation = true;
                         itemPrefabs[i].GetComponent<Rigidbody>().useGravity = false;
                     }
-
-                    itemPrefabs[i].transform.parent = handItemPos.transform;
-                    itemPrefabs[i].transform.localPosition = Vector3.zero;
-                    itemPrefabs[i].transform.localRotation = Quaternion.identity;
                 }
-                
-				break;
+                break;
             }
         }
 
@@ -94,11 +89,14 @@ public class PlayerInventory : MonoBehaviour
                 itemPrefabs[currentSlot].GetComponent<Rigidbody>().useGravity = true;
             }
 
-            itemPrefabs[currentSlot].transform.SetParent(null);
-            itemPrefabs[currentSlot].transform.localPosition = dropPos;
-            itemPrefabs[currentSlot].transform.localRotation = Quaternion.identity;
+            itemPrefabs[currentSlot].SetActive(true);
+            itemPrefabs[currentSlot].transform.position = dropPos;
 
-            invenKeyData[currentSlot] = string.Empty;
+			//itemPrefabs[currentSlot].transform.SetParent(null);
+			//itemPrefabs[currentSlot].transform.localPosition = dropPos;
+			//itemPrefabs[currentSlot].transform.localRotation = Quaternion.identity;
+
+			invenKeyData[currentSlot] = string.Empty;
             itemPrefabs[currentSlot] = null;
             invenSellPrice[currentSlot] = 0;
 

@@ -13,20 +13,17 @@ public class PlayerSpawnManager : MonoBehaviourPunCallbacks
 
     private void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            if (Instance != this)
-                Destroy(this.gameObject);
-        }
-    }
+		if (Instance != null && Instance != this)
+		{
+			Destroy(this.gameObject);
+			return;
+		}
+		Instance = this;
+		DontDestroyOnLoad(this.gameObject);
+	}
     public override void OnEnable()
     {
-        base.OnEnable();    //PhotonNetwork.AddCallbackTarget(this); 메서드로 Callback 받을 대상 지정
+        base.OnEnable();
     }
 
     public void MakePlayer(Transform spawnPos)
@@ -87,5 +84,11 @@ public class PlayerSpawnManager : MonoBehaviourPunCallbacks
         }
 
 		cam.Follow = player.transform.Find("CamFollow");
+	}
+
+	public override void OnLeftRoom()
+	{
+		base.OnLeftRoom();
+		Destroy(gameObject);
 	}
 }

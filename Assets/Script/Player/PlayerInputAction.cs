@@ -30,18 +30,22 @@ public class PlayerInputAction : MonoBehaviour
 
     public void OnMove(InputValue value)
 	{
-		if(canMove == false) { return; }
+		if (gameObject.GetPhotonView().IsMine == false) { return; }
+		if (canMove == false) { return; }
+
 		move = value.Get<Vector2>();
 	}
 
 	public void OnLook(InputValue value) 
 	{
+		if (gameObject.GetPhotonView().IsMine == false) { return; }
 		if (canMove == false || Cursor.lockState != CursorLockMode.Locked) { return; }
 		look = value.Get<Vector2>();
 	}
 
 	public void OnJump(InputValue value)
 	{
+		if (gameObject.GetPhotonView().IsMine == false) { return; }
 		if (canMove == false) { return; }
 
 		if (this.GetComponent<PlayerCondition>().staminaAmount > 0.1f && isJumpPress == false)
@@ -65,6 +69,7 @@ public class PlayerInputAction : MonoBehaviour
 
 	public void OnSprint(InputValue value)
 	{
+		if (gameObject.GetPhotonView().IsMine == false) { return; }
 		if (canMove == false) { return; }
 
 		sprint = value.isPressed;
@@ -72,6 +77,8 @@ public class PlayerInputAction : MonoBehaviour
 
 	public void OnInteraction(InputValue value)
 	{
+		if (gameObject.GetPhotonView().IsMine == false) { return; }
+
 		if (canMove == false) { return; }
 
 		if (playerInteract.interactable != null)
@@ -157,7 +164,9 @@ public class PlayerInputAction : MonoBehaviour
 
 	public void OnMenu(InputValue value)
 	{
-        if (canMove == false) { return; }
+		if (gameObject.GetPhotonView().IsMine == false) { return; }
+
+		if (canMove == false) { return; }
 
 		if (value.isPressed)
 		{

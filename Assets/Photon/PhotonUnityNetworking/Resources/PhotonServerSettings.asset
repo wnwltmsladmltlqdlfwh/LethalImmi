@@ -82,6 +82,10 @@ MonoBehaviour:
   - SellingItem
   - TextUpdate
   - GameOver
+  - GameCountDown
+  - SetPlayerVisible
+  - PlayerDamaged
+  - SellThisItem
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

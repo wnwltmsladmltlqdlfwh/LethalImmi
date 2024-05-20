@@ -3,7 +3,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class SceneMapLoadManager : MonoBehaviourPun, IPunObservable
+public class SceneMapLoadManager : MonoBehaviourPunCallbacks, IPunObservable
 {
 	public static SceneMapLoadManager Instance = null;
 
@@ -22,20 +22,18 @@ public class SceneMapLoadManager : MonoBehaviourPun, IPunObservable
 
     private void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            if (Instance != this)
-                Destroy(this.gameObject);
-        }
-    }
+		if (Instance != null && Instance != this)
+		{
+			Destroy(this.gameObject);
+			return;
+		}
+		Instance = this;
+		DontDestroyOnLoad(this.gameObject);
+	}
 
-    private void OnEnable()
+    public override void OnEnable()
 	{
+		base.OnEnable();
 		SceneManager.sceneLoaded += OnSceneLoad;
 		SceneManager.sceneUnloaded += OnSceneUnLoad;
 	}
@@ -51,7 +49,7 @@ public class SceneMapLoadManager : MonoBehaviourPun, IPunObservable
 
 		if(scene.name == "StartScene")
 		{
-			GameManager.Instance.GameStart();
+			//GameManager.Instance.GameStart();
 			basecampSpawnPoint = GameObject.Find("OutDoorPoint").transform.position;
         }
 		else if(scene.name == "MainScene")
@@ -110,7 +108,7 @@ public class SceneMapLoadManager : MonoBehaviourPun, IPunObservable
 
 		var map = GameObject.Find($"{curMapName}");
 
-        ItemSpawnManager.Instance.ItemSpawn(Random.Range(5, 10), map.transform.Find("ItemSpawnPoint"));
+        ItemSpawnManager.Instance.ItemSpawn(Random.Range(16, 23), map.transform.Find("ItemSpawnPoint"));
 
 		StartCoroutine(SpawnMonsters(map.transform));
     }
@@ -202,8 +200,10 @@ public class SceneMapLoadManager : MonoBehaviourPun, IPunObservable
 		}
 	}
 
-	private void OnDisable()
+	public override void OnDisable()
 	{
+		base.OnDisable();
+
 		SceneManager.sceneUnloaded -= OnSceneUnLoad;
 		SceneManager.sceneLoaded -= OnSceneLoad;
 	}
@@ -223,4 +223,13 @@ public class SceneMapLoadManager : MonoBehaviourPun, IPunObservable
             currentMapSpawnPoint = (Vector3)stream.ReceiveNext();
         }
     }
+
+	public override void OnLeftRoom()
+	{
+		base.OnLeftRoom();
+
+		Destroy(gameObject);
+
+		PhotonNetwork.LoadLevel("MainScene");
+	}
 }

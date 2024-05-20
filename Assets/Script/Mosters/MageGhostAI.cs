@@ -85,7 +85,7 @@ public class MageGhostAI : MonoBehaviourPunCallbacks
             return;
         }
 
-        if (!agent.pathPending && agent.remainingDistance < 1f)
+        if (agent.isOnNavMesh && !agent.pathPending && agent.remainingDistance < 1f)
         {
             SetRandomDestination();
         }
@@ -115,12 +115,15 @@ public class MageGhostAI : MonoBehaviourPunCallbacks
                 return;
             }
 
-            agent.destination = p.transform.position;
-            agent.isStopped = false;
-
-            if (distanceToPlayer <= stopDistance)
+            if (agent.isOnNavMesh)
             {
-                agent.isStopped = true;
+                agent.destination = p.transform.position;
+                agent.isStopped = false;
+
+                if (distanceToPlayer <= stopDistance)
+                {
+                    agent.isStopped = true;
+                }
             }
         }
     }
@@ -136,35 +139,51 @@ public class MageGhostAI : MonoBehaviourPunCallbacks
         }
         else
         {
-            animator.speed = 0f;
+			agent.isStopped = true;
+			animator.speed = 0f;
         }
     }
 
     void SetRandomDestination()
     {
-        Vector3 randomDirection = Random.insideUnitSphere * patrolRadius;
-        randomDirection += transform.position;
-        NavMeshHit hit;
-        NavMesh.SamplePosition(randomDirection, out hit, patrolRadius, 1);
-        Vector3 finalPosition = hit.position;
-        agent.destination = finalPosition;
-        agent.isStopped = false;
+        if (agent.isOnNavMesh)
+        {
+            Vector3 randomDirection = Random.insideUnitSphere * patrolRadius;
+            randomDirection += transform.position;
+            NavMeshHit hit;
+            NavMesh.SamplePosition(randomDirection, out hit, patrolRadius, 1);
+            Vector3 finalPosition = hit.position;
+            agent.destination = finalPosition;
+            agent.isStopped = false;
+        }
     }
 
+    [PunRPC]
     public void SetPlayerVisible(bool visible)
     {
         isPlayerVisible = visible;
         if (isPlayerVisible)
         {
             currentState = MonsterState.Stopped;
-        }
+			agent.isStopped = true;
+			animator.speed = 0f;
+		}
+        else
+        {
+			currentState = MonsterState.Patrolling;
+			agent.isStopped = false;
+			animator.speed = 1f;
+		}
     }
 
     private void OnTriggerStay(Collider other)
     {
-        if(other.GetComponent<Damageable>() != null)
+        if(other.tag == "Player")
         {
-            other.GetComponent<Damageable>().PlayerDamaged(20f);
+            if(other.GetComponent<Damageable>() != null)
+            {
+                other.GetComponent<Damageable>().GetComponent<PhotonView>().RPC("PlayerDamaged", RpcTarget.AllBuffered, 20f);
+            }
         }
     }
 }

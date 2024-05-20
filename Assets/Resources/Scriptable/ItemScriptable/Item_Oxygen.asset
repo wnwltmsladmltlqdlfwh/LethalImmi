@@ -20,3 +20,4 @@ MonoBehaviour:
   item_twoHanded: 0
   item_prefab_path: Item/Oxygen
   item_icon_path: Item/Icon/icon_barrel-blue-closed_LP
+  itemdata_path: Scriptable/ItemScriptable/Item_Oxygen

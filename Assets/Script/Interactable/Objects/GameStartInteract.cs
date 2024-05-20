@@ -1,8 +1,12 @@
 using Photon.Pun;
+using TMPro;
 using UnityEngine;
 
 public class GameStartInteract : Interactable
 {
+    [SerializeField]
+    TextMeshPro textMeshPro;
+
 	private void Start()
 	{
 		needLongPush = true;
@@ -10,14 +14,42 @@ public class GameStartInteract : Interactable
 
 	private void Update()
     {
-        if(SceneMapLoadManager.Instance.mapIsOn == false)
+        if(PhotonNetwork.IsMasterClient)
         {
-            promptMessage = "시작하기";
+            if(SceneMapLoadManager.Instance.loadMapName == string.Empty)
+            {
+		    	textMeshPro.text = "맵을\n세팅해주세요.";
+                promptMessage = string.Empty;
+		    }
+            else
+            {
+		    	if (SceneMapLoadManager.Instance.curMapName == string.Empty)
+		    	{
+		    		textMeshPro.text = $"방장이 시작해주세요. \n 현재 맵 : {SceneMapLoadManager.Instance.loadMapName}";
+                    promptMessage = "시작하기";
+		    	}
+		    	else
+		    	{
+		    		textMeshPro.text = "진행중..";
+		    		promptMessage = string.Empty;
+		    	}
+		    }
         }
         else
         {
-            promptMessage = "끝내기";
-        }
+			if (SceneMapLoadManager.Instance.curMapName == string.Empty)
+			{
+				textMeshPro.text = "준비중..";
+				promptMessage = "시작하기";
+			}
+			else
+			{
+				textMeshPro.text = "진행중..";
+				promptMessage = string.Empty;
+			}
+
+			promptMessage = string.Empty;
+		}
     }
 
     protected override void Interact(GameObject player)
@@ -31,11 +63,12 @@ public class GameStartInteract : Interactable
                 {
                     print("상호작용 플레이어는 마스터");
                     SceneMapLoadManager.Instance.MakeMap();
+                    GameManager.Instance.GameStart();
                 }
                 else
                 {
                     print("상호작용 플레이어는 리모트");
-                    photonView.RPC("RequestInteract", RpcTarget.MasterClient);
+                    return;
                 }
             }
             else
@@ -48,7 +81,7 @@ public class GameStartInteract : Interactable
                 else
                 {
                     print("상호작용 플레이어는 리모트");
-                    photonView.RPC("RequestInteract", RpcTarget.MasterClient);
+                    return;
                 }
             }
         }
@@ -62,10 +95,6 @@ public class GameStartInteract : Interactable
             if(SceneMapLoadManager.Instance.mapIsOn == false)
             {
 			    SceneMapLoadManager.Instance.MakeMap();
-            }
-            else
-            {
-                SceneMapLoadManager.Instance.DeleteMap();
             }
         }
     }

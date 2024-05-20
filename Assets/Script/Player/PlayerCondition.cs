@@ -1,7 +1,5 @@
 using Photon.Pun;
-using System.Collections;
 using UnityEngine;
-using UnityEngine.Rendering;
 using UnityEngine.UI;
 
 public class PlayerCondition : MonoBehaviour
@@ -41,62 +39,13 @@ public class PlayerCondition : MonoBehaviour
 		health = Mathf.Clamp(health, 0, maxHealth);
 
 		healthImage.color = new Color(255f, 0f, 0f, healthAmount);
-
-		//if (damageOverlay.alpha != 0f && overlayOff == true)
-		//{
-		//	damageOverlay.alpha -= Time.deltaTime;
-		//}
-		//else if (damageOverlay.alpha == 0f)
-		//{
-		//	overlayOff = false;
-		//}
 	}
 	
-	//public void TakeDamage(float dmg)
-	//{
-	//	if(damageTimeCount < damageTimeDelay)
-	//	{
-	//		return;
-	//	}
-
-	//	health -= dmg;
-	//	healthAmount = (maxHealth - health) / maxHealth;
-	//	Debug.Log("µ¥¹ÌÁö : " + dmg);
-	//	damageTimeCount = 0f;
-	//	StartCoroutine(ShakeCam());
-	//	StartCoroutine(ShowDamageOverlay());
-	//}
-
-	//IEnumerator ShakeCam()
-	//{
-	//	Vector3 originPos = _cam.localPosition;
-	//	float elapsedTime = 0.0f;
-
-	//	while(elapsedTime < shakeTime)
-	//	{
-	//		Vector3 randomPoint = originPos + UnityEngine.Random.insideUnitSphere * shakeAmount;
-	//		_cam.localPosition = Vector3.Lerp(_cam.localPosition, randomPoint, Time.deltaTime * shakeSpeed);
-
-	//		yield return null;
-
-	//		elapsedTime += Time.deltaTime;
-	//	}
-
-	//	_cam.localPosition = originPos;
-	//}
-
-	//IEnumerator ShowDamageOverlay()
-	//{
-	//	damageOverlay.alpha = 1f;
-	//	yield return new WaitForSeconds(2f);
-	//	overlayOff = true;
-	//}
-
 	public void RunStaminaUpdate(bool value)
 	{
 		if(value)
 		{
-			stamina -= Time.deltaTime * 20f;
+			stamina -= Time.deltaTime * 10f;
 		}
 		else
 		{
