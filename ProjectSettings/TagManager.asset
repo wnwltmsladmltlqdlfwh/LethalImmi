@@ -7,6 +7,7 @@ TagManager:
   - Items
   - StartScene
   - GameScene
+  - Monster
   layers:
   - Default
   - TransparentFX
@@ -17,7 +18,7 @@ TagManager:
   - Interactable
   - DeadZone
   - 
-  - 
+  - Monster
   - 
   - 
   - 

@@ -2334,6 +2334,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b15c3accbaa76164b983045494de4a2f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cam: {fileID: 0}
   distance: 4
   mask:
     serializedVersion: 2
@@ -2399,6 +2400,11 @@ MonoBehaviour:
   currentSlot: 0
   dropPoint: {fileID: 4784152258639396528}
   handItemPos: {fileID: 2017231436991800547}
+  itemPrefabs:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   photonView: {fileID: 0}
 --- !u!114 &2387428676239934847
 MonoBehaviour:
@@ -2412,7 +2418,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac522fa73f7cbe54fb1bf25800b03157, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  thisObj: 0
   damageTimeCount: 0
   damageTimeDelay: 1
   _cam: {fileID: 0}

@@ -12,9 +12,8 @@ public class PlayerInventory : MonoBehaviour
     [SerializeField]
     private Transform dropPoint;
 
-    [SerializeField]
-    private Transform handItemPos;
-    private GameObject[] itemPrefabs = new GameObject[4];
+    public Transform handItemPos;
+    public GameObject[] itemPrefabs = new GameObject[4];
 
     public PhotonView photonView;
 

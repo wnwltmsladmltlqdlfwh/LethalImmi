@@ -1,21 +1,10 @@
 using Photon.Pun;
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using UnityEngine;
-
-public enum UseObject
-{
-	Player,
-	Monster
-}
 
 public class Damageable : MonoBehaviour
 {
-	public UseObject thisObj;
 	private PlayerCondition isPlayer;
-	private MonstersCondition isMonster;
 
 	// 플레이어
 	public float damageTimeCount;
@@ -30,17 +19,8 @@ public class Damageable : MonoBehaviour
 
 	private void Start()
 	{
-		if(thisObj == UseObject.Player)
-		{
-			isPlayer = GetComponent<PlayerCondition>();
-			_cam = transform.Find("CamFollow");
-			isMonster = null;
-		}
-		else if(thisObj == UseObject.Monster)
-		{
-			isPlayer = null;
-			isMonster = GetComponent<MonstersCondition>();
-		}
+		isPlayer = GetComponent<PlayerCondition>();
+		_cam = transform.Find("CamFollow");
 	}
 
 	private void Update()
@@ -51,27 +31,27 @@ public class Damageable : MonoBehaviour
 			{
 				return;
 			}
-
-			PlayerDamaged(30f);
 		}
-	}
 
-	private void PlayerDamaged(float dmg)
+        if (isPlayer.health <= 0f)
+        {
+            PhotonNetwork.LeaveRoom(true);
+        }
+    }
+
+	public void PlayerDamaged(float dmg)
 	{
-		if (Input.GetKeyDown(KeyCode.K))    // 테스트용
+		if (damageTimeCount < damageTimeDelay)
 		{
-			if (damageTimeCount < damageTimeDelay)
-			{
-				return;
-			}
-
-			isPlayer.health -= dmg;
-			isPlayer.healthAmount = (isPlayer.maxHealth - isPlayer.health) / isPlayer.maxHealth;
-			Debug.Log("데미지 : " + dmg);
-			damageTimeCount = 0f;
-			StartCoroutine(ShakeCam());
-			StartCoroutine(ShowDamageOverlay());
+			return;
 		}
+
+		isPlayer.health -= dmg;
+		isPlayer.healthAmount = (isPlayer.maxHealth - isPlayer.health) / isPlayer.maxHealth;
+		Debug.Log("데미지 : " + dmg);
+		damageTimeCount = 0f;
+		StartCoroutine(ShakeCam());
+		StartCoroutine(ShowDamageOverlay());
 
 		if (damageOverlay.alpha != 0f && overlayOff == true)
 		{

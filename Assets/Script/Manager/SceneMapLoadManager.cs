@@ -11,9 +11,14 @@ public class SceneMapLoadManager : MonoBehaviourPun, IPunObservable
 
 	public string curMapName = null;
 
+	public bool mapIsOn = false;
+
     public Vector3 currentMapSpawnPoint;
 
     public Vector3 basecampSpawnPoint;
+
+	[SerializeField]
+	int spawnCount;
 
     private void Awake()
     {
@@ -48,6 +53,10 @@ public class SceneMapLoadManager : MonoBehaviourPun, IPunObservable
 		{
 			GameManager.Instance.GameStart();
 			basecampSpawnPoint = GameObject.Find("OutDoorPoint").transform.position;
+        }
+		else if(scene.name == "MainScene")
+		{
+			Cursor.lockState = CursorLockMode.None;
         }
 	}
 
@@ -97,12 +106,27 @@ public class SceneMapLoadManager : MonoBehaviourPun, IPunObservable
 		curMapName = curmap.name;
 		print($"¸Ê »ý¼º ¿Ï·á : {curMapName}");
 
-		photonView.RPC("SetCurrentMapSpawnPoint", RpcTarget.AllBuffered);
+        photonView.RPC("SetCurrentMapSpawnPoint", RpcTarget.AllBuffered);
 
 		var map = GameObject.Find($"{curMapName}");
 
         ItemSpawnManager.Instance.ItemSpawn(Random.Range(5, 10), map.transform.Find("ItemSpawnPoint"));
+
+		StartCoroutine(SpawnMonsters(map.transform));
     }
+
+	IEnumerator SpawnMonsters(Transform spawnPos)
+	{
+        spawnCount = Random.Range(3, 5);
+
+        Transform[] spawn = spawnPos.GetComponentsInChildren<Transform>();
+        while (spawnCount > 0)
+        {
+            yield return new WaitForSeconds(Random.Range(10f, 15f));
+			spawnCount--;
+            PhotonNetwork.Instantiate("Monster/DeathMage", spawn[Random.Range(0, spawn.Length)].position, Quaternion.identity);
+        }
+	}
 
 	[PunRPC]
 	private void SetCurrentMapSpawnPoint()
@@ -137,7 +161,7 @@ public class SceneMapLoadManager : MonoBehaviourPun, IPunObservable
     }
 
 	[PunRPC]
-	private void DeleteMap()
+	public void DeleteMap()
 	{
 		var map = GameObject.Find($"{curMapName}");
 
@@ -145,7 +169,21 @@ public class SceneMapLoadManager : MonoBehaviourPun, IPunObservable
 		{
 			PhotonNetwork.Destroy(map);
 		}
+
+        photonView.RPC("DeleteCurrentMapSpawnPoint", RpcTarget.AllBuffered);
+    }
+
+	[PunRPC]
+	private void DeleteMonsters()
+	{
+		GameObject[] monsters = GameObject.FindGameObjectsWithTag("Monster");
+
+		foreach(var monster in monsters)
+		{
+			PhotonNetwork.Destroy(monster);
+		}
 	}
+
 
 	[PunRPC]
 	private void DeleteCurrentMapSpawnPoint()

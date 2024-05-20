@@ -10,6 +10,8 @@ public class DataManager : MonoBehaviour
     public Dictionary<string, string> itemPrefabDic = new Dictionary<string, string>();
     public Dictionary<string, GameObject> mapDataDic = new Dictionary<string, GameObject>();
 
+    public Dictionary<string, GameObject> monsterDic = new Dictionary<string, GameObject>();
+
     private void Awake()
     {
         if (Instance == null)
@@ -47,7 +49,17 @@ public class DataManager : MonoBehaviour
             mapDataDic.Add(mapName.name, mapName);
         }
 
-        foreach(var printstring in mapDataDic)
+        GameObject[] monsterDatas = Resources.LoadAll<GameObject>("Monster");
+        foreach (var monster in monsterDatas)
+        {
+            if (mapDataDic.ContainsKey(monster.name))
+            {
+                print($"{monster.name}은/는 중복됩니다.");
+            }
+            mapDataDic.Add(monster.name, monster);
+        }
+
+        foreach (var printstring in mapDataDic)
         {
             print($"맵 키 : {printstring.Key}, 맵 이름 : {printstring.Value.name}");
         }

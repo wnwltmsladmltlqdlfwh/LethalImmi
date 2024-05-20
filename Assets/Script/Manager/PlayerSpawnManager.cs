@@ -11,7 +11,6 @@ public class PlayerSpawnManager : MonoBehaviourPunCallbacks
     public GameObject masterPlayer;
 	public GameObject[] remotePlayer = new GameObject[3];
 
-
     private void Awake()
     {
         if (Instance == null)
@@ -81,6 +80,11 @@ public class PlayerSpawnManager : MonoBehaviourPunCallbacks
 	public void InitCamera(GameObject camParent, GameObject player)
 	{
 		CinemachineVirtualCamera cam = camParent.transform.Find("1stCamera").GetComponent<CinemachineVirtualCamera>();
+
+		if(player.GetComponent<PlayerInteract>() != null)
+		{
+			player.GetComponent<PlayerInteract>().cam = camParent.GetComponentInChildren<Camera>();
+        }
 
 		cam.Follow = player.transform.Find("CamFollow");
 	}

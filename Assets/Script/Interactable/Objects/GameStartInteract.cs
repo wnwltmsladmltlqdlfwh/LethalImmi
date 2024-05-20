@@ -10,7 +10,7 @@ public class GameStartInteract : Interactable
 
 	private void Update()
     {
-        if(SceneMapLoadManager.Instance.curMapName == string.Empty)
+        if(SceneMapLoadManager.Instance.mapIsOn == false)
         {
             promptMessage = "시작하기";
         }
@@ -25,17 +25,33 @@ public class GameStartInteract : Interactable
         base.Interact(player);
         if (SceneMapLoadManager.Instance.currentMapSpawnPoint == Vector3.zero)
         {
-            if (player.GetPhotonView().Owner == PhotonNetwork.MasterClient)
+            if (SceneMapLoadManager.Instance.mapIsOn == false)
             {
-                print("상호작용 플레이어는 마스터");
-                SceneMapLoadManager.Instance.MakeMap();
-			}
+                if (player.GetPhotonView().Owner == PhotonNetwork.MasterClient)
+                {
+                    print("상호작용 플레이어는 마스터");
+                    SceneMapLoadManager.Instance.MakeMap();
+                }
+                else
+                {
+                    print("상호작용 플레이어는 리모트");
+                    photonView.RPC("RequestInteract", RpcTarget.MasterClient);
+                }
+            }
             else
             {
-                print("상호작용 플레이어는 리모트");
-                photonView.RPC("RequestInteract", RpcTarget.MasterClient);
+                if (player.GetPhotonView().Owner == PhotonNetwork.MasterClient)
+                {
+                    print("상호작용 플레이어는 마스터");
+                    SceneMapLoadManager.Instance.DeleteMap();
+                }
+                else
+                {
+                    print("상호작용 플레이어는 리모트");
+                    photonView.RPC("RequestInteract", RpcTarget.MasterClient);
+                }
             }
-		}
+        }
     }
 
     [PunRPC]
@@ -43,7 +59,14 @@ public class GameStartInteract : Interactable
     {
         if(PhotonNetwork.IsMasterClient)
         {
-			SceneMapLoadManager.Instance.MakeMap();
+            if(SceneMapLoadManager.Instance.mapIsOn == false)
+            {
+			    SceneMapLoadManager.Instance.MakeMap();
+            }
+            else
+            {
+                SceneMapLoadManager.Instance.DeleteMap();
+            }
         }
     }
 }

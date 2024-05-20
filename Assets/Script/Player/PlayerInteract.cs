@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class PlayerInteract : MonoBehaviourPunCallbacks
 {
-	private Camera cam;
+	public Camera cam;
 
 	[SerializeField]
 	private float distance = 3f; // 카메라가 쏘는 ray의 길이
@@ -31,7 +31,7 @@ public class PlayerInteract : MonoBehaviourPunCallbacks
 		playerUI.UpdateText(string.Empty);
 
 		// 카메라의 위치에서 카메라 정면으로 쏘는 ray
-		Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
+		Ray ray = new Ray(cam.transform.position, cam.transform.forward);
 		// ray를 Scene에서 볼 수 있도록 그려줌
 		Debug.DrawRay(ray.origin, ray.direction * distance);
 		RaycastHit hitInfo; // ray에 닿은 오브젝트 정보
@@ -81,5 +81,22 @@ public class PlayerInteract : MonoBehaviourPunCallbacks
 				isPressed = false;
 			}
 		}
-	}
+
+        RaycastHit hitMonster;
+
+		if(Physics.Raycast(ray, out hitMonster))
+		{
+			var monster = hitMonster.collider.GetComponent<MageGhostAI>();
+
+
+			if(monster != null)
+			{
+				monster.SetPlayerVisible(true);
+            }
+			else
+			{
+				return;
+            }
+        }
+    }
 }

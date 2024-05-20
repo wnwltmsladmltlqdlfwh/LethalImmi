@@ -1,5 +1,5 @@
 using Photon.Pun;
-using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
 
 
@@ -9,14 +9,16 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
     public GameObject aliveUI;
 
-	public List<GameObject> managerList = new List<GameObject>();
-
     public bool gameStarted = false;
 
 	PhotonView pView;
 
+    public int gameCount = 100;
+
     private void Awake()
 	{
+        pView = GetComponent<PhotonView>();
+
         if (Instance == null)
         {
             Instance = this;
@@ -42,11 +44,9 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     public void GameStart()
     {
         gameStarted = true;
-    }
+        gameCount = 100;
 
-    public void GameEnd()
-    {
-        gameStarted = false;
+        StartCoroutine(CheckWinCoroutine());
     }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
@@ -55,11 +55,27 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         {
             // 마스터 클라이언트인 경우에만 데이터를 전송합니다.
             stream.SendNext(gameStarted);
+            stream.SendNext(gameCount);
         }
         else
         {
             // 마스터 클라이언트가 보낸 데이터를 수신합니다.
             gameStarted = (bool)stream.ReceiveNext();
+            gameCount = (int)stream.ReceiveNext();
         }
+    }
+
+    private IEnumerator CheckWinCoroutine()
+    {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            while (gameCount > 0)
+            {
+                gameCount += Random.Range(3, 15);
+
+                yield return new WaitForSeconds(10f);
+            }
+        }
+        gameStarted = false;
     }
 }

@@ -564,8 +564,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   loadMapName: 
   curMapName: 
+  mapIsOn: 0
   currentMapSpawnPoint: {x: 0, y: 0, z: 0}
   basecampSpawnPoint: {x: 0, y: 0, z: 0}
+  spawnCount: 0
 --- !u!114 &53058454
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8354,8 +8356,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   aliveUI: {fileID: 0}
-  managerList: []
   gameStarted: 0
+  gameCount: 100
 --- !u!114 &2510801112401462993
 MonoBehaviour:
   m_ObjectHideFlags: 0
