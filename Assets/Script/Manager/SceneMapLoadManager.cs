@@ -49,7 +49,6 @@ public class SceneMapLoadManager : MonoBehaviourPunCallbacks, IPunObservable
 
 		if(scene.name == "StartScene")
 		{
-			//GameManager.Instance.GameStart();
 			basecampSpawnPoint = GameObject.Find("OutDoorPoint").transform.position;
         }
 		else if(scene.name == "MainScene")

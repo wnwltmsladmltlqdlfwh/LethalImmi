@@ -12,7 +12,7 @@ public class DataManager : MonoBehaviour
 
     public Dictionary<string, GameObject> monsterDic = new Dictionary<string, GameObject>();
 
-    private void Awake()
+	private void Awake()
     {
 		if (Instance != null && Instance != this)
 		{

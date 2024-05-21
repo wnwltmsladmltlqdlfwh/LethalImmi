@@ -47,7 +47,7 @@ public class PlayerController : MonoBehaviour
     public LayerMask groundedLayer;
 
 	// Ä«¸Þ¶ó
-    public GameObject _mainCam;
+    //public GameObject _mainCam;
 	public GameObject camTarget;
 	private float cinemachineTargetPitch;
 	public const float threshold = 0.01f;
@@ -65,10 +65,10 @@ public class PlayerController : MonoBehaviour
 
 	private void Awake()
 	{
-		if( _mainCam == null ) 
-		{
-			_mainCam = GameObject.FindGameObjectWithTag("MainCamera");
-		}
+		//if( _mainCam == null ) 
+		//{
+		//	_mainCam = GameObject.FindGameObjectWithTag("MainCamera");
+		//}
 		mPhotonView = GetComponent<PhotonView>();
 	}
 

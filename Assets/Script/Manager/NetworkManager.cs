@@ -62,10 +62,6 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
 		// StartScene으로 변경되면 실행할 함수 호출
 		PlayerSpawnManager.Instance.MakePlayer(GameObject.Find("SpawnPoint").transform);
-
-		// 네트워크 뷰의 업데이트 빈도를 조절
-		PhotonNetwork.SendRate = 20; // 초당 전송할 업데이트 수
-		PhotonNetwork.SerializationRate = 10; // 초당 시리얼화할 업데이트 수
 	}
 
     public override void OnLeftRoom()

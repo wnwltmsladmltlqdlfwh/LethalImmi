@@ -66,6 +66,7 @@ public class ItemObject : Interactable, IPunObservable
 
 		LoadIcon();
 	}
+
     private void LoadIcon()
     {
         // 아이콘을 경로에서 로드

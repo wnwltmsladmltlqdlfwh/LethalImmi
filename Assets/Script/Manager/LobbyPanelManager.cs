@@ -16,7 +16,7 @@ public class LobbyPanelManager : MonoBehaviourPunCallbacks
 	public GameObject nullPanel;
 	public CreateRoomMenu createRoomPanel;
 	public JoinPanel joinRoomPanel;
-	public GameObject settingPanel;
+	//public GameObject settingPanel;
 	public GameObject quitgamePanel;
 
 	private void Awake()

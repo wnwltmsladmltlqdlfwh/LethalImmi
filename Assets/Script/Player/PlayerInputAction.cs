@@ -101,10 +101,6 @@ public class PlayerInputAction : MonoBehaviour
 				}
 			}
 		}
-		else
-		{
-
-		}
 	}
 
 	public void OnItemChange(InputValue value)
