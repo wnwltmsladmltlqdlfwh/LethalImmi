@@ -73,16 +73,7 @@ public class GameStartInteract : Interactable
             }
             else
             {
-                if (player.GetPhotonView().Owner == PhotonNetwork.MasterClient)
-                {
-                    print("상호작용 플레이어는 마스터");
-                    SceneMapLoadManager.Instance.DeleteMap();
-                }
-                else
-                {
-                    print("상호작용 플레이어는 리모트");
-                    return;
-                }
+                return;
             }
         }
     }

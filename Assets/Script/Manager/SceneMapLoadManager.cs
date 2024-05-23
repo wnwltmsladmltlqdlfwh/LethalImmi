@@ -109,7 +109,11 @@ public class SceneMapLoadManager : MonoBehaviourPunCallbacks, IPunObservable
 
         ItemSpawnManager.Instance.ItemSpawn(Random.Range(16, 23), map.transform.Find("ItemSpawnPoint"));
 
-		StartCoroutine(SpawnMonsters(map.transform));
+		var monsterSpawn = map.transform.Find("MonsterSpawn");
+
+		if(monsterSpawn != null) { print(monsterSpawn.name); }
+
+		StartCoroutine(SpawnMonsters(monsterSpawn));
     }
 
 	IEnumerator SpawnMonsters(Transform spawnPos)
