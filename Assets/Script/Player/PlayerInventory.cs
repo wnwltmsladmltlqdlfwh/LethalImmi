@@ -115,7 +115,8 @@ public class PlayerInventory : MonoBehaviour
             }
             else
             {
-                itemPrefabs[i].gameObject.SetActive(i == currentSlot);
+                //itemPrefabs[i].gameObject.SetActive(i == currentSlot);
+                return;
 			}
 		}
 
