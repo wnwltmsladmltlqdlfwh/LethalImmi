@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.AI;
 using Photon.Pun;
+using Photon.Pun.UtilityScripts;
 
 public enum MonsterState
 {
@@ -27,7 +28,7 @@ public class MageGhostAI : MonoBehaviourPunCallbacks
         if (PhotonNetwork.IsMasterClient)
         {
             currentState = MonsterState.Patrolling;
-            InvokeRepeating("CheckPlayerDistance", 0, 0.5f); // ÀÏÁ¤ ÁÖ±â·Î ÇÃ·¹ÀÌ¾î¿ÍÀÇ °Å¸®¸¦ È®ÀÎ
+            InvokeRepeating("CheckPlayerDistance", 0, 0.5f); // ï¿½ï¿½ï¿½ï¿½ ï¿½Ö±ï¿½ï¿½ ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ï¿½ï¿½ï¿½ ï¿½Å¸ï¿½ï¿½ï¿½ È®ï¿½ï¿½
             SetRandomDestination();
         }
     }
@@ -148,6 +149,7 @@ public class MageGhostAI : MonoBehaviourPunCallbacks
     {
         if (agent.isOnNavMesh)
         {
+            animator.SetBool("isMove", true);
             Vector3 randomDirection = Random.insideUnitSphere * patrolRadius;
             randomDirection += transform.position;
             NavMeshHit hit;

@@ -45,7 +45,7 @@ public class SceneMapLoadManager : MonoBehaviourPunCallbacks, IPunObservable
 
     private void OnSceneLoad(Scene scene, LoadSceneMode mode)
 	{
-		Debug.Log($"·ÎµåµÈ ¾À : {scene.name} / ·Îµå ¸ðµå : {mode}");
+		Debug.Log($"ï¿½Îµï¿½ï¿½ ï¿½ï¿½ : {scene.name} / ï¿½Îµï¿½ ï¿½ï¿½ï¿½ : {mode}");
 
 		if(scene.name == "StartScene")
 		{
@@ -58,7 +58,7 @@ public class SceneMapLoadManager : MonoBehaviourPunCallbacks, IPunObservable
 	}
 
 
-	// ¸Ê »ý¼º
+	// ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	public void SetCurrentMap(string mapName, GameObject player)
 	{
 		var view = player.GetPhotonView();
@@ -68,19 +68,19 @@ public class SceneMapLoadManager : MonoBehaviourPunCallbacks, IPunObservable
 
 		if (mapName == string.Empty)
 		{
-			print("¸Ê ¼¼ÆÃ Ãë¼Ò");
+			print("ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½");
 			photonView.RPC("MapNameSet", RpcTarget.AllBuffered, mapName);
 		}
 		else
 		{
 			if (DataManager.Instance.mapDataDic.ContainsKey(mapName) == false)
 			{
-				print("¸Ê ¼¼ÆÃ ½ÇÆÐ");
+				print("ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½");
 				return;
 			}
 			else
 			{
-				print("¸Ê ¼¼ÆÃ ¼º°ø");
+				print("ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½");
 				photonView.RPC("MapNameSet", RpcTarget.AllBuffered, mapName);
 			}
 		}
@@ -94,14 +94,14 @@ public class SceneMapLoadManager : MonoBehaviourPunCallbacks, IPunObservable
 
 	public void MakeMap()
 	{
-		print("¸Ê »ý¼º ½ÃÀÛ");
+		print("ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½");
 		var curmap = PhotonNetwork.Instantiate($"Map/{loadMapName}",
 			GameObject.Find("MapSetPoint").transform.position, Quaternion.identity);
 
 		if (curmap != null) { print($"{curmap.name}"); }
 
 		curMapName = curmap.name;
-		print($"¸Ê »ý¼º ¿Ï·á : {curMapName}");
+		print($"ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ï·ï¿½ : {curMapName}");
 
         photonView.RPC("SetCurrentMapSpawnPoint", RpcTarget.AllBuffered);
 
@@ -141,7 +141,7 @@ public class SceneMapLoadManager : MonoBehaviourPunCallbacks, IPunObservable
 	}
 
 
-	// ¸Ê Á¦°Å
+	// ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	public void PlayerDeleteMap(GameObject player)
 	{
         PhotonView view = player.GetComponent<PhotonView>();
@@ -195,7 +195,7 @@ public class SceneMapLoadManager : MonoBehaviourPunCallbacks, IPunObservable
 
 	private void OnSceneUnLoad(Scene scene)
 	{
-		Debug.Log($"Á¾·áµÈ ¾À : {scene.name}");
+		Debug.Log($"ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ : {scene.name}");
 
 		if(scene.name == "StartScene")
 		{
