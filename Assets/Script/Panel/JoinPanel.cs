@@ -17,6 +17,8 @@ public class JoinPanel : MonoBehaviour
     public GameObject roomPrefab;
 
 	public Button refresh;
+	
+	[SerializeField] TMP_InputField findRoomNameIF;
 
 	private void Start()
 	{
@@ -33,7 +35,34 @@ public class JoinPanel : MonoBehaviour
 		PhotonNetwork.JoinLobby();
 	}
 
-	public void RoomListUpdate(List<RoomInfo> roomList)
+    private void Update()
+    {
+        if(findRoomNameIF.text != "")
+		{
+			foreach (Transform _room in roomListRect)
+			{
+				var _name = _room.Find("RoomName").GetComponent<TextMeshProUGUI>().text;
+
+				if (_name.Contains(findRoomNameIF.text))
+				{
+					_room.gameObject.SetActive(true);
+				}
+				else
+				{
+					_room.gameObject.SetActive(false);
+				}
+			}
+		}
+		else
+		{
+			foreach (Transform _room in roomListRect)
+			{
+				_room.gameObject.SetActive(true);
+			}
+		}
+    }
+
+    public void RoomListUpdate(List<RoomInfo> roomList)
 	{
 		List<RoomInfo> destroyCandidate = currentRoomList.FindAll((x) => false == roomList.Contains(x));
 
@@ -61,7 +90,7 @@ public class JoinPanel : MonoBehaviour
 			= $"{info.PlayerCount} / {info.MaxPlayers}";
 		room.transform.Find("JoinButton").GetComponent<Button>().onClick.AddListener(()
 			=> { PhotonNetwork.JoinRoom(info.Name); });
-		print("¹æ ¸®½ºÆ® »ý¼º"+info.Name);
+		print("ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½"+info.Name);
 	}
 
 	IEnumerator RefreshedRoomList()
